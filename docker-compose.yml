@@ -1,0 +1,115 @@
+version: "3.9"
+
+services:
+  # ── 1. DATABASE SERVICES ──────────────────────────────────────
+
+  mongodb:
+    image: mongo:7
+    container_name: bpt_mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: bpt_admin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: bpt_db
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - bpt_network
+    # MongoDB TIDAK di-expose ke publik, hanya akses antar container
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: bpt_qdrant
+    restart: unless-stopped
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - bpt_network
+    # Qdrant TIDAK di-expose ke publik
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  redis:
+    image: redis:7-alpine
+    container_name: bpt_redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - bpt_network
+    # Redis TIDAK di-expose ke publik
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ── 2. APPLICATION SERVICES ───────────────────────────────────
+
+  backend:
+    build:
+      context: ./bpt-komdigi-chatbot-BE
+      dockerfile: Dockerfile
+    container_name: bpt_backend
+    restart: unless-stopped
+    env_file:
+      - ./bpt-komdigi-chatbot-BE/.env.production
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      # Mount GCP Service Account Key (jangan masukkan ke image!)
+      - ./credentials/gcp-key.json:/app/credentials/gcp-key.json:ro
+      # Cache model EasyOCR & sentence-transformers agar tidak re-download setiap restart
+      - easyocr_models:/root/.EasyOCR
+      - sbert_models:/root/.cache/torch/sentence_transformers
+    ports:
+      - "8000:8000"  # Nginx akan proxy ke sini
+    networks:
+      - bpt_network
+
+  frontend:
+    build:
+      context: ./bpt-komdigi-chatbot
+      dockerfile: Dockerfile
+    container_name: bpt_frontend
+    restart: unless-stopped
+    env_file:
+      - ./bpt-komdigi-chatbot/.env.production
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:3000"  # Nginx akan proxy ke sini
+    networks:
+      - bpt_network
+
+# ── VOLUMES ──────────────────────────────────────────────────────
+volumes:
+  mongo_data:
+  qdrant_data:
+  redis_data:
+  # Volume untuk cache model ML — agar tidak re-download setiap restart
+  easyocr_models:
+  sbert_models:
+
+# ── NETWORK ───────────────────────────────────────────────────────
+networks:
+  bpt_network:
+    driver: bridge

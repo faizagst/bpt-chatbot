@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Dokumen Teknis — LENTERA Chatbot BPT Komdigi</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#22377A; --blue:#1E9CD7; --yellow:#f5b800; --red:#922b21;
+  --gray-50:#f9fafb; --gray-100:#f3f4f6; --gray-200:#e5e7eb;
+  --gray-300:#d1d5db; --gray-400:#9ca3af; --gray-500:#6b7280;
+  --gray-600:#4b5563; --gray-700:#374151; --gray-800:#1f2937; --gray-900:#111827;
+  --green:#15803d; --green-light:#dcfce7; --amber:#d97706; --amber-light:#fef9c3;
+  --blue-light:#dbeafe; --red-light:#fee2e2;
+  --code-bg:#0f172a; --code-fg:#e2e8f0;
+}
+html{font-size:13.5px}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--gray-800);background:#fff;line-height:1.65;max-width:960px;margin:0 auto;padding:48px 48px 80px}
+
+/* ── Cover ── */
+.cover{background:linear-gradient(135deg,var(--navy) 0%,#1a56c4 50%,var(--blue) 100%);color:#fff;border-radius:20px;padding:64px 56px 52px;margin-bottom:48px;position:relative;overflow:hidden;page-break-after:always}
+.cover::before{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.04)}
+.cover::after{content:'';position:absolute;bottom:-80px;left:-40px;width:280px;height:280px;border-radius:50%;background:rgba(245,184,0,.06)}
+.cover-logo{display:flex;align-items:center;gap:14px;margin-bottom:40px}
+.cover-logo-box{width:52px;height:52px;background:rgba(255,255,255,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;border:1px solid rgba(255,255,255,.2)}
+.cover-logo-text p:first-child{font-size:.72rem;letter-spacing:2px;opacity:.7;text-transform:uppercase}
+.cover-logo-text p:last-child{font-size:1.05rem;font-weight:700}
+.cover h1{font-size:2.3rem;font-weight:900;line-height:1.15;letter-spacing:-1px;margin-bottom:10px;position:relative;z-index:1}
+.cover h1 span{color:#fde68a}
+.cover .tagline{font-size:1rem;opacity:.8;margin-bottom:40px;max-width:520px;font-weight:400;position:relative;z-index:1}
+.cover-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative;z-index:1}
+.cover-meta-item{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:14px 18px}
+.cover-meta-item .label{font-size:.68rem;text-transform:uppercase;letter-spacing:1.2px;opacity:.65;margin-bottom:5px}
+.cover-meta-item .value{font-size:.95rem;font-weight:700}
+
+/* ── TOC ── */
+.toc{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:14px;padding:28px 32px;margin-bottom:40px;page-break-after:always}
+.toc h2{font-size:1rem;font-weight:800;color:var(--gray-900);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--blue)}
+.toc-section{margin-bottom:16px}
+.toc-section .toc-title{font-size:.88rem;font-weight:700;color:var(--navy);margin-bottom:6px}
+.toc-items{list-style:none;padding:0}
+.toc-items li{padding:3px 0 3px 16px;border-left:2px solid var(--gray-200);font-size:.83rem;color:var(--gray-600)}
+.toc-items li span{color:var(--blue);font-weight:600;margin-right:6px}
+
+/* ── Chapter ── */
+.chapter{margin-bottom:48px;page-break-before:always}
+.chapter:first-of-type{page-break-before:avoid}
+.chapter-header{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,var(--navy),#1a56c4);color:#fff;border-radius:14px;padding:20px 28px;margin-bottom:24px}
+.chapter-num{font-size:1.8rem;font-weight:900;background:rgba(255,255,255,.12);width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chapter-info h2{font-size:1.15rem;font-weight:800}
+.chapter-info p{font-size:.8rem;opacity:.78;margin-top:3px}
+
+/* ── Section ── */
+.section{margin-bottom:28px}
+.section > h3{font-size:1rem;font-weight:800;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section > h3::before{content:'';width:4px;height:18px;background:var(--blue);border-radius:2px;flex-shrink:0}
+h4{font-size:.88rem;font-weight:700;color:var(--gray-700);margin:16px 0 8px}
+p{font-size:.87rem;color:var(--gray-700);margin-bottom:10px;line-height:1.7}
+p:last-child{margin-bottom:0}
+
+/* ── Code ── */
+.code-wrap{background:var(--code-bg);border-radius:10px;overflow:hidden;margin:12px 0;page-break-inside:avoid}
+.code-bar{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.07);font-family:'JetBrains Mono',monospace;font-size:.68rem;color:#64748b}
+.code-dots{display:flex;gap:5px}
+.code-dots span{width:8px;height:8px;border-radius:50%}
+.d1{background:#f87171}.d2{background:#fbbf24}.d3{background:#34d399}
+pre{padding:16px;font-family:'JetBrains Mono',monospace;font-size:.75rem;line-height:1.7;color:var(--code-fg);white-space:pre-wrap;word-break:break-word;overflow-x:auto}
+.ck{color:#7dd3fc}.cv{color:#86efac}.cm{color:#475569;font-style:italic}.ce{color:#f9a8d4}.cn{color:#fde68a}.cw{color:#fcd34d}
+
+/* ── Tables ── */
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.82rem;page-break-inside:avoid}
+th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-weight:700;font-size:.79rem}
+td{padding:8px 12px;border-bottom:1px solid var(--gray-200);color:var(--gray-700);vertical-align:top}
+tr:nth-child(even) td{background:var(--gray-50)}
+td code,th code{font-family:'JetBrains Mono',monospace;font-size:.75em;background:rgba(30,58,138,.08);padding:1px 5px;border-radius:4px;color:var(--navy)}
+.badge{display:inline-flex;align-items:center;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.badge-ok{background:#dcfce7;color:#15803d}
+.badge-warn{background:#fef9c3;color:#92400e}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-purple{background:#f3e8ff;color:#7c3aed}
+
+/* ── Callouts ── */
+.callout{display:flex;gap:12px;border-radius:10px;padding:14px 16px;margin:12px 0;border-left:4px solid;page-break-inside:avoid}
+.callout-icon{font-size:1.15rem;flex-shrink:0;margin-top:1px}
+.callout-body .title{font-size:.85rem;font-weight:700;margin-bottom:3px}
+.callout-body p,.callout-body ul{font-size:.82rem;color:var(--gray-700);line-height:1.6}
+.callout-body ul{margin:6px 0 0;padding-left:16px}
+.callout-note{background:#eff6ff;border-color:var(--blue)}
+.callout-warn{background:#fffbeb;border-color:var(--amber)}
+.callout-ok{background:#f0fdf4;border-color:var(--green)}
+.callout-danger{background:#fef2f2;border-color:var(--red)}
+
+/* ── Architecture Diagram ── */
+.arch-grid{display:grid;grid-template-columns:1fr;gap:10px;margin:16px 0}
+.arch-row{display:flex;gap:10px;align-items:stretch}
+.arch-box{border:1.5px solid;border-radius:10px;padding:12px 16px;flex:1}
+.arch-box .ab-title{font-size:.78rem;font-weight:800;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.arch-box .ab-sub{font-size:.72rem;color:var(--gray-500);line-height:1.5}
+.ab-blue{border-color:#bfdbfe;background:#eff6ff}
+.ab-blue .ab-title{color:var(--navy)}
+.ab-green{border-color:#bbf7d0;background:#f0fdf4}
+.ab-green .ab-title{color:var(--green)}
+.ab-purple{border-color:#e9d5ff;background:#faf5ff}
+.ab-purple .ab-title{color:#7c3aed}
+.ab-orange{border-color:#fed7aa;background:#fff7ed}
+.ab-orange .ab-title{color:#c2410c}
+.ab-gray{border-color:var(--gray-200);background:var(--gray-50)}
+.ab-gray .ab-title{color:var(--gray-700)}
+.arch-arrow{display:flex;align-items:center;justify-content:center;color:var(--gray-400);font-size:.75rem;font-weight:700;padding:4px 0;letter-spacing:1px}
+
+/* ── Flow Steps ── */
+.flow{display:flex;flex-direction:column;gap:0;margin:16px 0}
+.flow-step{display:flex;gap:16px;align-items:flex-start;position:relative;padding-bottom:18px}
+.flow-step:last-child{padding-bottom:0}
+.flow-step:not(:last-child)::after{content:'';position:absolute;left:17px;top:36px;bottom:0;width:2px;background:var(--gray-200)}
+.flow-num{width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;flex-shrink:0;z-index:1}
+.flow-content h4{font-size:.88rem;font-weight:700;color:var(--navy);margin:6px 0 4px}
+.flow-content p{font-size:.82rem;color:var(--gray-600);margin:0}
+
+/* ── API Card ── */
+.api-card{border:1px solid var(--gray-200);border-radius:12px;margin:12px 0;overflow:hidden;page-break-inside:avoid}
+.api-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
+.method{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:6px;flex-shrink:0}
+.method-post{background:#dcfce7;color:#15803d}
+.method-get{background:#dbeafe;color:#1e40af}
+.method-delete{background:#fee2e2;color:#991b1b}
+.api-path{font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:600;color:var(--navy)}
+.api-desc{font-size:.78rem;color:var(--gray-500);margin-left:auto}
+.api-body{padding:12px 14px}
+.api-body p{font-size:.82rem;color:var(--gray-600);margin-bottom:6px}
+
+/* ── Spec List ── */
+.spec-list{list-style:none;padding:0;margin:10px 0}
+.spec-list li{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid var(--gray-100);font-size:.83rem}
+.spec-list li:last-child{border-bottom:none}
+.spec-list .sk{font-weight:700;color:var(--gray-700);width:180px;flex-shrink:0}
+.spec-list .sv{color:var(--gray-600)}
+
+/* ── Misc ── */
+.divider{height:1px;background:var(--gray-200);margin:32px 0}
+.tag{display:inline-flex;align-items:center;gap:4px;background:var(--gray-100);border:1px solid var(--gray-200);border-radius:6px;padding:2px 8px;font-size:.72rem;font-weight:600;color:var(--gray-600);margin:2px}
+.footer{text-align:center;color:var(--gray-400);font-size:.75rem;padding:32px 0 0;border-top:1px solid var(--gray-200);margin-top:48px}
+
+@media print{
+  body{padding:20px 24px 40px;font-size:12px}
+  .cover,.chapter-header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .code-wrap,.callout,.api-card{-webkit-print-color-adjust:exact;print-color-adjust:exact;page-break-inside:avoid}
+  th,tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-logo">
+    <div class="cover-logo-box">🤖</div>
+    <div class="cover-logo-text">
+      <p>Kementerian Komunikasi dan Digital RI</p>
+      <p>BPT Komdigi — Balai Pelatihan Talenta Digital</p>
+    </div>
+  </div>
+  <h1>Dokumen Teknis<br/><span>LENTERA Chatbot System</span></h1>
+  <p class="tagline">Layanan Talenta Digital Responsif AI — Sistem chatbot berbasis RAG (Retrieval-Augmented Generation) untuk layanan informasi publik BPT Komdigi</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="label">Versi Dokumen</div>
+      <div class="value">1.0.0</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Tanggal</div>
+      <div class="value">April 2026</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Klasifikasi</div>
+      <div class="value">Teknis Internal</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Status</div>
+      <div class="value">Production Ready</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>📋 Daftar Isi</h2>
+  <div class="toc-section">
+    <div class="toc-title">Bab 1 — Ringkasan Eksekutif</div>
+    <ul class="toc-items">
+      <li><span>1.1</span> Tujuan Sistem</li>
+      <li><span>1.2</span> Permasalahan yang Diselesaikan</li>
+      <li><span>1.3</span> Manfaat Utama</li>
+    </ul>
+  </div>
+  <div class="toc-section">
+    <div class="toc-title">Bab 2 — Arsitektur Sistem</div>
+    <ul class="toc-items">
+      <li><span>2.1</span> Gambaran Keseluruhan</li>
+      <li><span>2.2</span> Komponen Utama</li>
+      <li><span>2.3</span> Alur Data RAG</li>
+      <li><span>2.4</span> Alur Autentikasi Admin</li>
+    </ul>
+  </div>
+  <div class="toc-section">
+    <div class="toc-title">Bab 3 — Stack Teknologi</div>
+    <ul class="toc-items">
+      <li><span>3.1</span> Frontend (Next.js)</li>
+      <li><span>3.2</span> Backend (FastAPI Python)</li>
+      <li><span>3.3</span> Infrastruktur & Database</li>
+      <li><span>3.4</span> AI & Machine Learning</li>
+    </ul>
+  </div>
+  <div class="toc-section">
+    <div class="toc-title">Bab 4 — Spesifikasi API</div>
+    <ul class="toc-items">
+      <li><span>4.1</span> Endpoint Publik (Chat & Quota)</li>
+      <li><span>4.2</span> Endpoint Manajemen Dokumen</li>
+      <li><span>4.3</span> Endpoint Analitik</li>
+      <li><span>4.4</span> Endpoint Autentikasi</li>
+    </ul>
+  </div>
+  <div class="toc-section">
+    <div class="toc-title">Bab 5 — Fitur Sistem</div>
+    <ul class="toc-items">
+      <li><span>5.1</span> RAG Pipeline & Knowledge Base</li>
+      <li><span>5.2</span> Sistem Cache Berlapis</li>
+      <li><span>5.3</span> Rate Limiting</li>
+      <li><span>5.4</span> Panel Admin</li>
+      <li><span>5.5</span> Analitik & Monitoring</li>
+    </ul>
+  </div>
+  <div class="toc-section">
+    <div class="toc-title">Bab 6 — Infrastruktur Deployment</div>
+    <ul class="toc-items">
+      <li><span>6.1</span> Persyaratan VPS</li>
+      <li><span>6.2</span> Docker Compose Services</li>
+      <li><span>6.3</span> Nginx & SSL</li>
+    </ul>
+  </div>
+  <div class="toc-section">
+    <div class="toc-title">Bab 7 — Keamanan</div>
+    <ul class="toc-items">
+      <li><span>7.1</span> Autentikasi & Otorisasi</li>
+      <li><span>7.2</span> Keamanan Database</li>
+      <li><span>7.3</span> Keamanan API</li>
+    </ul>
+  </div>
+  <div class="toc-section">
+    <div class="toc-title">Bab 8 — Format Dokumen yang Didukung</div>
+  </div>
+  <div class="toc-section">
+    <div class="toc-title">Bab 9 — Konfigurasi Environment</div>
+  </div>
+</div>
+
+<!-- BAB 1 -->
+<div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-num">1</div>
+    <div class="chapter-info">
+      <h2>Ringkasan Eksekutif</h2>
+      <p>Gambaran tujuan, permasalahan, dan nilai strategis sistem</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>1.1 Tujuan Sistem</h3>
+    <p>LENTERA (Layanan Talenta Digital Responsif AI) adalah sistem chatbot berbasis kecerdasan buatan yang dikembangkan untuk Balai Pelatihan Talenta Komunikasi dan Digital (BPT Komdigi), Kementerian Komunikasi dan Digital Republik Indonesia. Sistem ini dirancang untuk memberikan layanan informasi yang akurat, konsisten, dan tersedia 24 jam kepada masyarakat umum mengenai program-program pelatihan yang diselenggarakan oleh BPT Komdigi.</p>
+    <p>LENTERA menggunakan pendekatan <strong>Retrieval-Augmented Generation (RAG)</strong> — teknologi AI generatif yang diperkaya dengan basis pengetahuan dari dokumen resmi BPT Komdigi, sehingga setiap jawaban yang diberikan bersumber dari informasi yang terverifikasi, bukan dari pengetahuan umum model AI semata.</p>
+  </div>
+
+  <div class="section">
+    <h3>1.2 Permasalahan yang Diselesaikan</h3>
+    <table>
+      <tr><th>Permasalahan</th><th>Solusi LENTERA</th></tr>
+      <tr><td>Pertanyaan yang berulang membebani staf layanan</td><td>Chatbot AI menjawab otomatis 24/7, tidak memerlukan kehadiran staf</td></tr>
+      <tr><td>Informasi pelatihan sulit diakses dan tersebar</td><td>Dokumen resmi diunggah sekali, langsung bisa dijawab oleh AI</td></tr>
+      <tr><td>Jawaban manual inkonsisten antar petugas</td><td>AI menjawab dari sumber yang sama — konsisten dan terverifikasi</td></tr>
+      <tr><td>Update informasi lambat sampai ke publik</td><td>Admin upload dokumen baru → AI langsung menggunakannya sebagai referensi</td></tr>
+      <tr><td>Tidak ada data tentang apa yang masyarakat tanyakan</td><td>Dashboard analitik menampilkan top-questions dengan semantic clustering</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>1.3 Manfaat Utama</h3>
+    <div class="arch-row">
+      <div class="arch-box ab-blue">
+        <div class="ab-title">🎯 Akurasi Tinggi</div>
+        <div class="ab-sub">Jawaban bersumber dari dokumen resmi BPT Komdigi, bukan dari "halusinasi" AI umum. Sistem secara eksplisit menyatakan ketika informasi tidak ditemukan.</div>
+      </div>
+      <div class="arch-box ab-green">
+        <div class="ab-title">⚡ Respons Cepat</div>
+        <div class="ab-sub">Cache berlapis (exact + semantic) memastikan pertanyaan serupa dijawab dalam milidetik tanpa memanggil Gemini AI lagi. Efisiensi biaya API tinggi.</div>
+      </div>
+    </div>
+    <div class="arch-row" style="margin-top:10px">
+      <div class="arch-box ab-purple">
+        <div class="ab-title">📊 Data-Driven</div>
+        <div class="ab-sub">Admin mendapat insight real-time: pertanyaan apa yang paling sering ditanyakan, clustering semantik mengelompokkan pertanyaan bermakna sama.</div>
+      </div>
+      <div class="arch-box ab-orange">
+        <div class="ab-title">🔒 Aman & Terkontrol</div>
+        <div class="ab-sub">Panel admin dilindungi JWT, database tidak di-expose ke publik, CORS ketat, rate limiting mencegah abuse, semua data di server sendiri.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BAB 2 -->
+<div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-num">2</div>
+    <div class="chapter-info">
+      <h2>Arsitektur Sistem</h2>
+      <p>Gambaran keseluruhan komponen, interaksi, dan alur data</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>2.1 Gambaran Keseluruhan</h3>
+    <p>Sistem LENTERA terdiri dari 5 layanan yang berjalan di dalam Docker Compose dan 1 reverse proxy (Nginx) di host VPS. Semua layanan berkomunikasi melalui jaringan internal Docker dan tidak ada database yang di-expose ke internet publik.</p>
+
+    <div class="arch-grid">
+      <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:12px;padding:4px">
+        <div style="text-align:center;padding:8px;font-size:.72rem;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:1px">Internet / Browser Publik</div>
+        <div class="arch-row" style="padding:0 4px 4px">
+          <div class="arch-box ab-gray" style="text-align:center">
+            <div class="ab-title" style="justify-content:center">🌐 Nginx Reverse Proxy</div>
+            <div class="ab-sub" style="text-align:center">SSL Termination · Port 80/443<br/>chatbot.domain.go.id → :3000<br/>api.domain.go.id → :8000</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">↕ bpt_network (Docker Bridge)</div>
+
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:4px">
+        <div style="text-align:center;padding:8px;font-size:.72rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:1px">Application Layer</div>
+        <div class="arch-row" style="padding:0 4px 4px">
+          <div class="arch-box ab-blue">
+            <div class="ab-title">⚛️ Frontend (Next.js 16)</div>
+            <div class="ab-sub">Port 3000 · ChatWidget · AdminPanel · LoginPage · API Proxy Routes ke Backend</div>
+          </div>
+          <div class="arch-box ab-blue">
+            <div class="ab-title">🐍 Backend (FastAPI)</div>
+            <div class="ab-sub">Port 8000 · RAG Pipeline · Upload Dokumen · Analytics · Rate Limiting</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">↕ bpt_network (Docker Bridge)</div>
+
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:4px">
+        <div style="text-align:center;padding:8px;font-size:.72rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px">Data Layer (Tidak di-expose ke publik)</div>
+        <div class="arch-row" style="padding:0 4px 4px">
+          <div class="arch-box ab-green">
+            <div class="ab-title">🍃 MongoDB 7</div>
+            <div class="ab-sub">Port 27017 · Metadata dokumen · Chat logs · Admin accounts</div>
+          </div>
+          <div class="arch-box ab-green">
+            <div class="ab-title">🔵 Qdrant</div>
+            <div class="ab-sub">Port 6333 · Vector embeddings · Semantic search · Cache vectors</div>
+          </div>
+          <div class="arch-box ab-green">
+            <div class="ab-title">🔴 Redis 7</div>
+            <div class="ab-sub">Port 6379 · Exact cache · Rate limiting counter · Top-questions cache</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">↑ Google Cloud APIs (External)</div>
+
+      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:4px">
+        <div class="arch-row" style="padding:4px">
+          <div class="arch-box ab-orange">
+            <div class="ab-title">✨ Vertex AI — Gemini 2.5 Flash</div>
+            <div class="ab-sub">LLM untuk generate jawaban dari konteks dokumen</div>
+          </div>
+          <div class="arch-box ab-orange">
+            <div class="ab-title">📐 Vertex AI — text-embedding-005</div>
+            <div class="ab-sub">Model embedding untuk semantic search dan cache</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>2.2 Alur Data RAG — Saat User Bertanya</h3>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-content">
+          <h4>User mengetik pertanyaan di ChatWidget</h4>
+          <p>Browser mengirim <code>POST /api/rag/chat</code> ke Next.js frontend (session_id disimpan di localStorage)</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-content">
+          <h4>Next.js Proxy meneruskan ke FastAPI Backend</h4>
+          <p>Route <code>/api/rag/chat</code> di Next.js mem-proxy ke <code>http://backend:8000/api/chat</code> (Docker internal)</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-content">
+          <h4>Rate Limit Check (Redis)</h4>
+          <p>Backend memeriksa apakah session sudah mencapai batas 10 pertanyaan/3 jam. Jika terlampaui, langsung return HTTP 429 dengan TTL countdown.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-content">
+          <h4>Exact Cache Lookup (Redis)</h4>
+          <p>Backend mencari cache hash SHA-256 dari query + data_version + parameter model. Cache hit → jawaban langsung dikembalikan tanpa LLM call.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div class="flow-content">
+          <h4>Semantic Cache Lookup (Qdrant)</h4>
+          <p>Jika exact cache miss, query diubah menjadi embedding lalu dicari di Qdrant. Pertanyaan yang "bermakna sama" (skor cosine similarity ≥ 0.92) akan mengambil jawaban dari cache ini.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">6</div>
+        <div class="flow-content">
+          <h4>Retrieval — Cari Dokumen Relevan (Qdrant)</h4>
+          <p>Query di-embed ke vector lalu dicari di koleksi dokumen Qdrant. Top-K (default: 3) chunk dokumen yang paling relevan diambil sebagai konteks.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">7</div>
+        <div class="flow-content">
+          <h4>Generate Jawaban (Gemini 2.5 Flash)</h4>
+          <p>Konteks dokumen + pertanyaan user dikirim ke Gemini melalui template prompt. Gemini diminta menjawab HANYA berdasarkan konteks, dan wajib menggunakan kalimat fallback standar jika tidak ada info.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">8</div>
+        <div class="flow-content">
+          <h4>Simpan & Cache Hasil</h4>
+          <p>Jawaban disimpan ke: MongoDB (chat log), Redis (exact cache), Qdrant (semantic cache). Chat log cache top-questions diinvalidasi agar data analytics tetap fresh.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">9</div>
+        <div class="flow-content">
+          <h4>Response ke Frontend</h4>
+          <p>Frontend menerima: <code>answer</code>, <code>sources</code> (nama file dokumen), <code>quota</code> (sisa pertanyaan), <code>is_fallback</code> (boolean apakah info tidak ditemukan).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>2.3 Alur Autentikasi Admin</h3>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-content">
+          <h4>Admin mengakses <code>/admin</code> → tampil LoginPage</h4>
+          <p>Next.js middleware melindungi <code>/admin/dashboard</code> — user tanpa JWT cookie diredirect ke <code>/admin</code></p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-content">
+          <h4>POST <code>/api/auth/login</code> — verifikasi password</h4>
+          <p>Server membandingkan password dengan bcrypt hash di MongoDB. Jika cocok, JWT token dibuat (24 jam), disimpan sebagai HttpOnly cookie.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-content">
+          <h4>Redirect ke <code>/admin/dashboard</code></h4>
+          <p>Middleware Next.js memverifikasi JWT pada setiap request ke <code>/admin/dashboard/*</code> menggunakan library <code>jose</code>.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-content">
+          <h4>Session timeout otomatis 24 jam</h4>
+          <p>AdminPanel memiliki countdown timer. Saat JWT expired, cookie dihapus otomatis dan admin diredirect ke halaman login kembali.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BAB 3 -->
+<div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-num">3</div>
+    <div class="chapter-info">
+      <h2>Stack Teknologi</h2>
+      <p>Daftar lengkap teknologi, library, dan versi yang digunakan</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>3.1 Frontend — Next.js</h3>
+    <table>
+      <tr><th>Teknologi</th><th>Versi</th><th>Fungsi</th></tr>
+      <tr><td>Next.js (App Router)</td><td><span class="badge badge-blue">16.1.6</span></td><td>Framework React SSR — routing, API proxy, middleware auth</td></tr>
+      <tr><td>React</td><td><span class="badge badge-blue">19.2.3</span></td><td>Library UI component</td></tr>
+      <tr><td>Mongoose</td><td><span class="badge badge-blue">^9.3.3</span></td><td>ODM MongoDB untuk model Admin (auth)</td></tr>
+      <tr><td>bcryptjs</td><td><span class="badge badge-blue">^3.0.3</span></td><td>Hash &amp; verifikasi password admin</td></tr>
+      <tr><td>jose</td><td><span class="badge badge-blue">^6.2.2</span></td><td>JWT sign/verify di Edge Runtime Next.js</td></tr>
+      <tr><td>Vanilla CSS</td><td>—</td><td>Styling semua komponen (inline style + global CSS)</td></tr>
+    </table>
+
+    <h4>Komponen Frontend Utama</h4>
+    <table>
+      <tr><th>Komponen</th><th>Lokasi</th><th>Fungsi</th></tr>
+      <tr><td>App.jsx</td><td><code>components/chatbot/</code></td><td>Root layout: navbar, hero, stats, CTA card, float widget</td></tr>
+      <tr><td>ChatWidget.jsx</td><td><code>components/chatbot/</code></td><td>Widget chat floating — UI percakapan, quota display, countdown</td></tr>
+      <tr><td>AdminPanel.jsx</td><td><code>components/chatbot/</code></td><td>Upload dokumen, kelola dokumen, akses analytics &amp; history</td></tr>
+      <tr><td>AnalyticsSection.jsx</td><td><code>components/chatbot/</code></td><td>Dashboard top-questions dengan semantic clustering</td></tr>
+      <tr><td>HistorySection.jsx</td><td><code>components/chatbot/</code></td><td>Riwayat chat dengan filter pencarian &amp; fitur clear all</td></tr>
+      <tr><td>LoginPage.jsx</td><td><code>components/chatbot/</code></td><td>Halaman login admin dengan animasi</td></tr>
+      <tr><td>Md.jsx</td><td><code>components/chatbot/</code></td><td>Renderer markdown untuk format jawaban bot</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>3.2 Backend — FastAPI Python</h3>
+    <table>
+      <tr><th>Library / Framework</th><th>Versi</th><th>Fungsi</th></tr>
+      <tr><td>FastAPI</td><td><span class="badge badge-ok">0.110.0</span></td><td>Framework API Python — routing, validation, docs Swagger</td></tr>
+      <tr><td>Uvicorn</td><td><span class="badge badge-ok">0.29.0</span></td><td>ASGI server untuk jalankan FastAPI</td></tr>
+      <tr><td>Pydantic</td><td><span class="badge badge-ok">≥2.6.4</span></td><td>Data validation &amp; serialization (request/response schemas)</td></tr>
+      <tr><td>LangChain Google Vertex AI</td><td><span class="badge badge-ok">≥1.0.0</span></td><td>Integrasi Gemini LLM &amp; text-embedding-005</td></tr>
+      <tr><td>LangChain Qdrant</td><td><span class="badge badge-ok">latest</span></td><td>Vector store integration untuk retrieval dokumen</td></tr>
+      <tr><td>Qdrant Client</td><td><span class="badge badge-ok">1.8.0</span></td><td>Client Python untuk Qdrant vector database</td></tr>
+      <tr><td>PyMongo</td><td><span class="badge badge-ok">4.6.2</span></td><td>Driver MongoDB untuk metadata dokumen &amp; chat logs</td></tr>
+      <tr><td>Redis</td><td><span class="badge badge-ok">5.0.8</span></td><td>Client Redis untuk cache &amp; rate limiting</td></tr>
+      <tr><td>EasyOCR</td><td><span class="badge badge-ok">1.7.1</span></td><td>OCR untuk ekstrak teks dari gambar (PNG/JPG/JPEG)</td></tr>
+      <tr><td>pdfplumber</td><td><span class="badge badge-ok">0.11.0</span></td><td>Parsing PDF dengan preservasi layout</td></tr>
+      <tr><td>docx2txt</td><td><span class="badge badge-ok">0.8</span></td><td>Ekstrak teks dari file DOCX/DOC</td></tr>
+      <tr><td>sentence-transformers</td><td><span class="badge badge-ok">≥2.7.0</span></td><td>Model embedding lokal untuk semantic clustering top-questions</td></tr>
+      <tr><td>pandas + openpyxl</td><td><span class="badge badge-ok">2.2.2 / 3.1.5</span></td><td>Parsing file CSV dan XLSX</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>3.3 Infrastruktur &amp; Database</h3>
+    <table>
+      <tr><th>Teknologi</th><th>Versi</th><th>Fungsi</th><th>Persistensi</th></tr>
+      <tr><td>MongoDB</td><td>7</td><td>Metadata dokumen, chat logs, akun admin, top-questions cache</td><td>Volume <code>mongo_data</code></td></tr>
+      <tr><td>Qdrant</td><td>latest</td><td>Vector embeddings dokumen (RAG retrieval) + semantic cache query</td><td>Volume <code>qdrant_data</code></td></tr>
+      <tr><td>Redis</td><td>7-alpine</td><td>Exact cache jawaban, rate limit counter, top-questions compute cache</td><td>Volume <code>redis_data</code></td></tr>
+      <tr><td>Docker Compose</td><td>v2.x</td><td>Orkestrasi semua container di satu VPS</td><td>—</td></tr>
+      <tr><td>Nginx</td><td>OS package</td><td>Reverse proxy, SSL termination, URL routing</td><td>—</td></tr>
+      <tr><td>Let's Encrypt / Certbot</td><td>—</td><td>SSL certificate gratis (auto-renew setiap 90 hari)</td><td>—</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>3.4 AI &amp; Machine Learning</h3>
+    <table>
+      <tr><th>Model</th><th>Provider</th><th>Fungsi Detail</th></tr>
+      <tr><td>gemini-2.5-flash</td><td>Google Vertex AI</td><td>Large Language Model untuk generate jawaban dari konteks dokumen yang diretrieve. Temperature 0.2 untuk jawaban konsisten, tidak terlalu kreatif.</td></tr>
+      <tr><td>text-embedding-005</td><td>Google Vertex AI</td><td>Model embedding untuk: (1) index chunk dokumen ke Qdrant, (2) embed query saat retrieval, (3) embed query/jawaban untuk semantic cache.</td></tr>
+      <tr><td>paraphrase-multilingual-MiniLM-L12-v2</td><td>sentence-transformers (HuggingFace)</td><td>Model lokal untuk semantic clustering top-questions. Gratis, tidak butuh API. Support Bahasa Indonesia. ~120MB, download otomatis saat pertama run.</td></tr>
+      <tr><td>EasyOCR Models</td><td>EasyOCR (built-in)</td><td>Model deep learning CRNN untuk OCR file gambar. Support Bahasa Indonesia + Inggris. ~200MB, download otomatis saat pertama upload gambar.</td></tr>
+    </table>
+    <div class="callout callout-warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <p class="title">Biaya API Google Vertex AI</p>
+        <p>Sistem menggunakan Google Vertex AI yang ditagih per token. Cache berlapis (exact + semantic) diimplementasikan untuk meminimalkan jumlah panggilan ke Gemini dan text-embedding-005. Pertanyaan yang sama atau serupa tidak akan memanggil API lagi dalam 1 jam.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BAB 4 -->
+<div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-num">4</div>
+    <div class="chapter-info">
+      <h2>Spesifikasi API</h2>
+      <p>Daftar lengkap semua endpoint, request/response format, dan kode status</p>
+    </div>
+  </div>
+  <p>Semua API backend berjalan di <code>https://api.domain.go.id</code> (via Nginx). Frontend mengakses backend melalui proxy route Next.js di <code>/api/rag/*</code> dan <code>/api/admin/*</code>. Dokumentasi interaktif tersedia di <code>https://api.domain.go.id/docs</code>.</p>
+
+  <div class="section">
+    <h3>4.1 Endpoint Publik</h3>
+
+    <div class="api-card">
+      <div class="api-header">
+        <span class="method method-get">GET</span>
+        <span class="api-path">/</span>
+        <span class="api-desc">Health Check</span>
+      </div>
+      <div class="api-body">
+        <p>Cek status server berjalan.</p>
+        <div class="code-wrap"><div class="code-bar"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>Response 200</div>
+<pre>{ <span class="ck">"status"</span>: <span class="cv">"ok"</span>, <span class="ck">"message"</span>: <span class="cv">"BPT Komdigi Backend API is running."</span> }</pre></div>
+      </div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-header">
+        <span class="method method-post">POST</span>
+        <span class="api-path">/api/chat</span>
+        <span class="api-desc">Kirim pertanyaan ke chatbot RAG</span>
+      </div>
+      <div class="api-body">
+        <p><strong>Request Body (JSON):</strong></p>
+        <div class="code-wrap"><div class="code-bar"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>Request</div>
+<pre>{
+  <span class="ck">"query"</span>: <span class="cv">"Bagaimana cara mendaftar pelatihan DTS?"</span>,  <span class="cm">// min 1, max 100 karakter</span>
+  <span class="ck">"session_id"</span>: <span class="cv">"session_1744527200_abc123"</span>             <span class="cm">// dari localStorage user</span>
+}</pre></div>
+        <p style="margin-top:10px"><strong>Response 200 (sukses):</strong></p>
+        <div class="code-wrap"><div class="code-bar"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>Response 200</div>
+<pre>{
+  <span class="ck">"answer"</span>: <span class="cv">"Pendaftaran DTS dapat dilakukan melalui..."</span>,
+  <span class="ck">"sources"</span>: [<span class="cv">"panduan_dts_2025.pdf"</span>],
+  <span class="ck">"session_id"</span>: <span class="cv">"session_1744527200_abc123"</span>,
+  <span class="ck">"quota"</span>: { <span class="ck">"limit"</span>: <span class="cn">10</span>, <span class="ck">"used"</span>: <span class="cn">3</span>, <span class="ck">"remaining"</span>: <span class="cn">7</span>, <span class="ck">"ttl"</span>: <span class="cn">9000</span> },
+  <span class="ck">"is_fallback"</span>: <span class="cn">false</span>
+}</pre></div>
+        <p style="margin-top:10px"><strong>Response 429 (rate limit tercapai):</strong></p>
+        <div class="code-wrap"><div class="code-bar"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>Response 429</div>
+<pre>{
+  <span class="ck">"detail"</span>: <span class="cv">"Batas penggunaan tercapai (10 pertanyaan / 3 jam)."</span>,
+  <span class="ck">"ttl_seconds"</span>: <span class="cn">7842</span>,   <span class="cm">// detik hingga kuota reset — untuk countdown timer</span>
+  <span class="ck">"quota"</span>: { <span class="ck">"limit"</span>: <span class="cn">10</span>, <span class="ck">"used"</span>: <span class="cn">10</span>, <span class="ck">"remaining"</span>: <span class="cn">0</span>, <span class="ck">"ttl"</span>: <span class="cn">7842</span> }
+}</pre></div>
+      </div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-header">
+        <span class="method method-get">GET</span>
+        <span class="api-path">/api/quota?session_id={id}</span>
+        <span class="api-desc">Cek sisa kuota sesi</span>
+      </div>
+      <div class="api-body">
+        <div class="code-wrap"><div class="code-bar"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>Response 200</div>
+<pre>{ <span class="ck">"limit"</span>: <span class="cn">10</span>, <span class="ck">"used"</span>: <span class="cn">3</span>, <span class="ck">"remaining"</span>: <span class="cn">7</span>, <span class="ck">"ttl"</span>: <span class="cn">8400</span> }</pre></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>4.2 Endpoint Manajemen Dokumen</h3>
+
+    <div class="api-card">
+      <div class="api-header">
+        <span class="method method-post">POST</span>
+        <span class="api-path">/api/upload</span>
+        <span class="api-desc">Upload dokumen ke RAG knowledge base</span>
+      </div>
+      <div class="api-body">
+        <p><strong>Content-Type:</strong> <code>multipart/form-data</code> — field <code>file</code></p>
+        <p><strong>Format yang diterima:</strong> PDF, DOC, DOCX, CSV, XLSX, PNG, JPG, JPEG, TXT — Maks 15MB</p>
+        <div class="code-wrap"><div class="code-bar"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>Response 200</div>
+<pre>{ <span class="ck">"status"</span>: <span class="cv">"success"</span>, <span class="ck">"doc_id"</span>: <span class="cv">"a1b2c3d4-..."</span>, <span class="ck">"filename"</span>: <span class="cv">"20260413_panduan.pdf"</span> }</pre></div>
+      </div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-header">
+        <span class="method method-get">GET</span>
+        <span class="api-path">/api/documents</span>
+        <span class="api-desc">Ambil daftar semua dokumen yang sudah diindeks</span>
+      </div>
+      <div class="api-body">
+        <div class="code-wrap"><div class="code-bar"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>Response 200</div>
+<pre>{
+  <span class="ck">"documents"</span>: [
+    {
+      <span class="ck">"doc_id"</span>: <span class="cv">"a1b2c3d4-..."</span>,
+      <span class="ck">"filename"</span>: <span class="cv">"20260413_panduan.pdf"</span>,
+      <span class="ck">"uploader"</span>: <span class="cv">"admin"</span>,
+      <span class="ck">"status"</span>: <span class="cv">"ready"</span>,
+      <span class="ck">"uploaded_at"</span>: <span class="cv">"2026-04-13T10:30:00+07:00"</span>
+    }
+  ]
+}</pre></div>
+      </div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-header">
+        <span class="method method-delete">DELETE</span>
+        <span class="api-path">/api/documents/{doc_id}</span>
+        <span class="api-desc">Hapus dokumen dari Qdrant &amp; MongoDB</span>
+      </div>
+      <div class="api-body">
+        <p>Menghapus semua vector chunks di Qdrant yang memiliki <code>metadata.doc_id</code> sama, dan metadata di MongoDB. Cache otomatis diinvalidasi.</p>
+        <div class="code-wrap"><div class="code-bar"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>Response 200</div>
+<pre>{ <span class="ck">"status"</span>: <span class="cv">"success"</span>, <span class="ck">"message"</span>: <span class="cv">"Dokumen a1b2c3d4-... berhasil dihapus."</span> }</pre></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>4.3 Endpoint Analitik</h3>
+
+    <div class="api-card">
+      <div class="api-header">
+        <span class="method method-get">GET</span>
+        <span class="api-path">/api/chatlogs?limit=100&amp;search=pelatihan</span>
+        <span class="api-desc">Riwayat chat (diproxy Next.js di /api/admin/chat-history)</span>
+      </div>
+      <div class="api-body">
+        <p>Parameter: <code>limit</code> (1–500, default 100), <code>search</code> (filter keyword opsional). Timestamp dikembalikan dalam ISO 8601 dengan tzinfo UTC untuk konversi ke WIB yang tepat di frontend.</p>
+      </div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-header">
+        <span class="method method-delete">DELETE</span>
+        <span class="api-path">/api/chatlogs</span>
+        <span class="api-desc">Hapus semua riwayat chat</span>
+      </div>
+      <div class="api-body">
+        <p>Menghapus semua dokumen dari koleksi <code>chatlogs</code> MongoDB. Cache top-questions di Redis otomatis diinvalidasi.</p>
+      </div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-header">
+        <span class="method method-get">GET</span>
+        <span class="api-path">/api/top-questions?limit=20&amp;force_refresh=false</span>
+        <span class="api-desc">Top pertanyaan dengan semantic clustering</span>
+      </div>
+      <div class="api-body">
+        <p>Mengambil pertanyaan chat, mengelompokkan yang "bermakna sama" menggunakan model <code>paraphrase-multilingual-MiniLM-L12-v2</code>, dan mengembalikan cluster terurut dari yang paling sering. Result di-cache Redis selama 10 menit.</p>
+        <div class="code-wrap"><div class="code-bar"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>Response 200</div>
+<pre>{
+  <span class="ck">"top_questions"</span>: [
+    {
+      <span class="ck">"canonical"</span>: <span class="cv">"Bagaimana cara mendaftar pelatihan DTS?"</span>,
+      <span class="ck">"count"</span>: <span class="cn">47</span>,
+      <span class="ck">"variants"</span>: [<span class="cv">"cara daftar dts"</span>, <span class="cv">"pendaftaran digital talent scholarship"</span>]
+    }
+  ],
+  <span class="ck">"total_clusters"</span>: <span class="cn">12</span>
+}</pre></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>4.4 Endpoint Autentikasi (Next.js API Routes)</h3>
+    <table>
+      <tr><th>Endpoint</th><th>Method</th><th>Fungsi</th></tr>
+      <tr><td><code>/api/auth/login</code></td><td><span class="badge badge-ok">POST</span></td><td>Verifikasi username &amp; password → set JWT HttpOnly cookie (24 jam)</td></tr>
+      <tr><td><code>/api/auth/logout</code></td><td><span class="badge badge-ok">POST</span></td><td>Hapus cookie auth_token</td></tr>
+      <tr><td><code>/api/auth/me</code></td><td><span class="badge badge-blue">GET</span></td><td>Kembalikan info admin dari JWT yang aktif (username, role, avatar)</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- BAB 5 -->
+<div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-num">5</div>
+    <div class="chapter-info">
+      <h2>Fitur Sistem Detail</h2>
+      <p>Penjelasan teknis mendalam setiap fitur utama</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>5.1 RAG Pipeline &amp; Knowledge Base</h3>
+    <h4>Proses Upload Dokumen</h4>
+    <p>Ketika admin mengupload dokumen, backend melakukan pipeline berikut:</p>
+    <ol style="padding-left:20px;font-size:.84rem;color:var(--gray-700);line-height:2.1">
+      <li><strong>Deteksi format file</strong> berdasarkan ekstensi</li>
+      <li><strong>Ekstrak teks</strong>: PDF → pdfplumber, DOCX/DOC → docx2txt, CSV/XLSX → pandas, PNG/JPG/JPEG → EasyOCR (deep learning OCR), TXT → langsung dibaca</li>
+      <li><strong>Chunking</strong>: teks dipecah menjadi chunks ukuran <code>1000 karakter</code> dengan overlap <code>100 karakter</code> menggunakan <code>RecursiveCharacterTextSplitter</code></li>
+      <li><strong>Embedding</strong>: setiap chunk di-embed menjadi vector 768 dimensi menggunakan <code>text-embedding-005</code></li>
+      <li><strong>Store ke Qdrant</strong>: setiap vector disimpan dengan metadata <code>doc_id</code> dan <code>filename</code></li>
+      <li><strong>Store ke MongoDB</strong>: metadata dokumen (doc_id, filename, uploader, status, uploaded_at) dicatat</li>
+      <li><strong>Invalidate cache</strong>: data version di Redis di-bump agar jawaban cache lama tidak dipakai lagi</li>
+    </ol>
+
+    <h4>Prompt Engineering</h4>
+    <p>Sistem menggunakan prompt yang secara eksplisit membatasi LLM agar menjawab HANYA dari dokumen yang tersedia:</p>
+    <div class="code-wrap"><div class="code-bar"><div class="code-dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>System Prompt Template</div>
+<pre><span class="cm">Anda adalah Asisten Resmi BPT Komdigi.</span>
+<span class="cm">Tugas Anda adalah memberikan jawaban yang ramah, sopan, dan akurat.</span>
+<span class="cm">Gunakan HANYA teks referensi (Konteks) berikut untuk menjawab.</span>
+<span class="cm">Jika jawabannya tidak ada di referensi, jawab dengan kalimat berikut:</span>
+<span class="cm">"Maaf, informasi tersebut tidak ditemukan di dokumen resmi kami."</span>
+
+<span class="cw">Referensi (Konteks):</span>
+{context}   <span class="cm">← Top-3 chunk Qdrant yang paling relevan</span>
+
+<span class="cw">Pertanyaan Pengguna:</span> {question}
+
+<span class="cw">Jawaban Anda:</span></pre></div>
+  </div>
+
+  <div class="section">
+    <h3>5.2 Sistem Cache Berlapis</h3>
+    <table>
+      <tr><th>Layer Cache</th><th>Storage</th><th>Mekanisme</th><th>TTL</th><th>Keterangan</th></tr>
+      <tr><td><strong>Exact Cache</strong></td><td>Redis</td><td>Hash SHA-256 dari: query (normalized) + data_version + semua parameter model</td><td>1 jam</td><td>Hit jika pertanyaan benar-benar sama persis setelah normalisasi</td></tr>
+      <tr><td><strong>Semantic Cache</strong></td><td>Qdrant + Redis</td><td>Cosine similarity embedding query vs cache index (min score 0.92, min token coverage 0.65)</td><td>1 jam</td><td>Hit jika pertanyaan "bermakna sama" walau kata berbeda</td></tr>
+      <tr><td><strong>Top-Questions Cache</strong></td><td>Redis</td><td>Hasil komputasi clustering semantic disimpan setelah selesai</td><td>10 menit</td><td>Invalidated saat ada chat baru atau clear history</td></tr>
+    </table>
+    <p><strong>Data Versioning:</strong> Setiap kali dokumen diupload atau dihapus, <code>data_version</code> di Redis di-increment. Cache mengandung data version saat dibuat, sehingga jawaban dari dokumen lama otomatis tidak dipakai setelah dokumen di-update.</p>
+  </div>
+
+  <div class="section">
+    <h3>5.3 Rate Limiting</h3>
+    <p>Untuk mencegah penggunaan berlebihan dan mengontrol biaya API, setiap sesi pengguna dibatasi:</p>
+    <ul class="spec-list">
+      <li><span class="sk">Batas pertanyaan</span><span class="sv">10 pertanyaan per sesi</span></li>
+      <li><span class="sk">Window waktu</span><span class="sv">3 jam (10.800 detik)</span></li>
+      <li><span class="sk">Mekanisme</span><span class="sv">Redis INCR + EXPIRE per session_id</span></li>
+      <li><span class="sk">Response saat limit</span><span class="sv">HTTP 429 dengan <code>ttl_seconds</code> (countdown) dan info quota</span></li>
+      <li><span class="sk">Session ID</span><span class="sv">Unique per browser (disimpan di localStorage, format <code>session_{timestamp}_{random}</code>)</span></li>
+      <li><span class="sk">UI</span><span class="sv">Frontend menampilkan countdown timer realtime (jam:menit:detik) hingga kuota reset</span></li>
+      <li><span class="sk">Fallback UI</span><span class="sv">Ketika kuota habis atau info tidak ada, ditampilkan card dengan link WhatsApp dan Ticketing System</span></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>5.4 Panel Admin</h3>
+    <p>Panel admin tersedia di <code>/admin/dashboard</code> dan dilindungi JWT. Fitur yang tersedia:</p>
+    <div class="arch-row">
+      <div class="arch-box ab-blue">
+        <div class="ab-title">📤 Upload Dokumen</div>
+        <div class="ab-sub">Drag &amp; drop atau klik pilih file. Format: PDF, DOC, DOCX, CSV, XLSX, PNG, JPG, TXT. Maks 15MB. Progress dan hasil upload ditampilkan realtime.</div>
+      </div>
+      <div class="arch-box ab-blue">
+        <div class="ab-title">📋 Kelola Dokumen</div>
+        <div class="ab-sub">Daftar semua dokumen yang diindeks di Qdrant. Info: filename, format, waktu upload, uploader, status. Tombol hapus dengan konfirmasi.</div>
+      </div>
+    </div>
+    <div class="arch-row" style="margin-top:10px">
+      <div class="arch-box ab-blue">
+        <div class="ab-title">📊 Analitik Pertanyaan</div>
+        <div class="ab-sub">Dashboard top-questions dengan semantic clustering. Menampilkan pertanyaan yang sering ditanya, jumlah varian, dan cluster pertanyaan bermakna sama.</div>
+      </div>
+      <div class="arch-box ab-blue">
+        <div class="ab-title">💬 Riwayat Pesan</div>
+        <div class="ab-sub">Log semua percakapan yang masuk. Filter pencarian per keyword. Timestamp dalam WIB. Tombol hapus semua riwayat.</div>
+      </div>
+    </div>
+    <p style="margin-top:12px">Sesi admin otomatis expire setelah <strong>24 jam</strong>, dengan countdown timer yang berubah warna merah saat mendekati waktu habis (kurang dari 5 menit).</p>
+  </div>
+
+  <div class="section">
+    <h3>5.5 Analitik &amp; Monitoring</h3>
+    <h4>Semantic Clustering Top-Questions</h4>
+    <p>Fitur analitik menggunakan model <code>paraphrase-multilingual-MiniLM-L12-v2</code> yang berjalan lokal (tanpa biaya API) untuk:</p>
+    <ol style="padding-left:20px;font-size:.84rem;color:var(--gray-700);line-height:2.1">
+      <li>Mengambil semua pertanyaan dari MongoDB chat logs</li>
+      <li>Mengubah setiap pertanyaan menjadi embedding vector 384 dimensi</li>
+      <li>Mengelompokkan pertanyaan yang similarity-nya di atas threshold menggunakan hierarchical clustering</li>
+      <li>Menentukan "canonical question" (pertanyaan representatif) untuk setiap cluster</li>
+      <li>Mengembalikan cluster diurutkan dari yang paling banyak muncul</li>
+    </ol>
+    <p>Hasil clustering di-cache di Redis selama 10 menit untuk performa, dan diinvalidasi saat ada percakapan baru.</p>
+  </div>
+</div>
+
+<!-- BAB 6 -->
+<div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-num">6</div>
+    <div class="chapter-info">
+      <h2>Infrastruktur Deployment</h2>
+      <p>Persyaratan server, konfigurasi Docker, dan Nginx</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>6.1 Persyaratan VPS Minimum</h3>
+    <table>
+      <tr><th>Komponen</th><th>Minimum</th><th>Rekomendasi</th><th>Keterangan</th></tr>
+      <tr><td>CPU</td><td>2 vCPU</td><td>4 vCPU</td><td>EasyOCR &amp; sentence-transformers membutuhkan CPU untuk inference</td></tr>
+      <tr><td>RAM</td><td>4 GB</td><td>8 GB</td><td>ML models (~320MB) + MongoDB + Qdrant + Redis + Python process</td></tr>
+      <tr><td>Disk</td><td>40 GB SSD</td><td>80 GB SSD</td><td>Docker images (~6GB) + volume data + model downloads</td></tr>
+      <tr><td>OS</td><td colspan="2">Ubuntu 22.04 LTS</td><td>LTS untuk stabilitas production</td></tr>
+      <tr><td>Bandwidth</td><td>10 Mbps</td><td>100 Mbps</td><td>Upload dokumen dan komunikasi ke Google Cloud API</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>6.2 Docker Compose Services</h3>
+    <table>
+      <tr><th>Service</th><th>Image</th><th>Port Internal</th><th>Volume</th><th>Health Check</th></tr>
+      <tr><td><code>bpt_mongodb</code></td><td>mongo:7</td><td>27017</td><td>mongo_data</td><td><span class="badge badge-ok">✓ mongosh ping</span></td></tr>
+      <tr><td><code>bpt_qdrant</code></td><td>qdrant/qdrant</td><td>6333</td><td>qdrant_data</td><td><span class="badge badge-ok">✓ curl /healthz</span></td></tr>
+      <tr><td><code>bpt_redis</code></td><td>redis:7-alpine</td><td>6379</td><td>redis_data</td><td><span class="badge badge-ok">✓ redis-cli ping</span></td></tr>
+      <tr><td><code>bpt_backend</code></td><td>Build lokal</td><td>8000</td><td>easyocr_models, sbert_models, credentials/</td><td><span class="badge badge-ok">✓ curl /</span></td></tr>
+      <tr><td><code>bpt_frontend</code></td><td>Build lokal</td><td>3000</td><td>—</td><td><span class="badge badge-warn">via Nginx</span></td></tr>
+    </table>
+    <div class="callout callout-note">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <p class="title">Urutan Startup</p>
+        <p><code>mongodb, qdrant, redis</code> → (tunggu healthcheck healthy) → <code>backend</code> → (tunggu healthcheck healthy) → <code>frontend</code>. Ini dikonfigurasi dengan <code>depends_on: condition: service_healthy</code> di docker-compose.yml untuk memastikan backend tidak start sebelum database siap.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>6.3 Nginx &amp; SSL</h3>
+    <p>Nginx berjalan langsung di VPS (bukan dalam container) sebagai reverse proxy:</p>
+    <table>
+      <tr><th>Domain</th><th>Proxy ke</th><th>Catatan</th></tr>
+      <tr><td><code>chatbot.domain.go.id</code></td><td><code>localhost:3000</code></td><td>Frontend Next.js</td></tr>
+      <tr><td><code>api.chatbot.domain.go.id</code></td><td><code>localhost:8000</code></td><td>Backend FastAPI, max upload 50MB</td></tr>
+    </table>
+    <p>SSL certificate disediakan oleh <strong>Let's Encrypt</strong> melalui Certbot (gratis). Certificate berlaku 90 hari dan diperbarui otomatis oleh Certbot cron daemon. Port 80 otomatis di-redirect ke HTTPS 443.</p>
+  </div>
+</div>
+
+<!-- BAB 7 -->
+<div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-num">7</div>
+    <div class="chapter-info">
+      <h2>Keamanan Sistem</h2>
+      <p>Lapisan keamanan yang diimplementasikan</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>7.1 Autentikasi &amp; Otorisasi</h3>
+    <ul class="spec-list">
+      <li><span class="sk">Password Hashing</span><span class="sv">bcryptjs dengan salt rounds 10. Password plaintext tidak pernah disimpan.</span></li>
+      <li><span class="sk">JWT Token</span><span class="sv">Signed dengan secret key acak 48-byte. Berlaku 24 jam. Disimpan sebagai HttpOnly cookie (tidak bisa diakses JavaScript).</span></li>
+      <li><span class="sk">Middleware Proteksi</span><span class="sv">Next.js Edge middleware melindungi semua route <code>/admin/dashboard/*</code>. Request tanpa JWT valid langsung diredirect ke login.</span></li>
+      <li><span class="sk">Library JWT</span><span class="sv"><code>jose</code> — kompatibel dengan Next.js Edge Runtime, lebih aman dari <code>jsonwebtoken</code></span></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>7.2 Keamanan Database</h3>
+    <ul class="spec-list">
+      <li><span class="sk">Isolasi Jaringan</span><span class="sv">MongoDB, Qdrant, dan Redis TIDAK di-expose ke port host. Hanya bisa diakses dari container lain dalam <code>bpt_network</code>.</span></li>
+      <li><span class="sk">Autentikasi MongoDB</span><span class="sv">Database terlindungi dengan root username/password. Bukan mode no-auth.</span></li>
+      <li><span class="sk">Autentikasi Redis</span><span class="sv">Redis dikonfigurasi dengan <code>requirepass</code> — semua koneksi wajib autentikasi.</span></li>
+      <li><span class="sk">GCP Credentials</span><span class="sv">File <code>gcp-key.json</code> di-mount sebagai read-only (<code>:ro</code>) dan tidak pernah dimasukkan ke dalam image Docker.</span></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>7.3 Keamanan API</h3>
+    <ul class="spec-list">
+      <li><span class="sk">CORS</span><span class="sv">Di production, header CORS hanya mengizinkan domain frontend yang dikonfigurasi via <code>ALLOWED_ORIGINS</code>. Bukan <code>*</code>.</span></li>
+      <li><span class="sk">Rate Limiting</span><span class="sv">Redis-based per session ID. Mencegah abuse dan menjaga biaya API Vertex AI &lt;  terkontrol.</span></li>
+      <li><span class="sk">Input Validation</span><span class="sv">Query chat dibatasi maksimal 100 karakter (Pydantic <code>max_length</code>). File upload dibatasi format dan ukuran.</span></tr>
+      <li><span class="sk">HTTPS Only</span><span class="sv">Nginx meredirect semua HTTP ke HTTPS. Semua komunikasi terenkripsi TLS 1.2/1.3.</span></li>
+      <li><span class="sk">Secret Management</span><span class="sv">Semua password dan API key disimpan di file <code>.env</code> yang tidak pernah di-commit ke repository Git (<code>.gitignore</code>).</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- BAB 8 -->
+<div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-num">8</div>
+    <div class="chapter-info">
+      <h2>Format Dokumen yang Didukung</h2>
+      <p>Kapabilitas pemrosesan setiap jenis file</p>
+    </div>
+  </div>
+  <table>
+    <tr><th>Format</th><th>Ekstensi</th><th>Library</th><th>Kapabilitas</th><th>Keterangan</th></tr>
+    <tr>
+      <td><span class="badge badge-red">PDF</span></td>
+      <td><code>.pdf</code></td>
+      <td>pdfplumber + pypdf</td>
+      <td>Full teks, preservasi layout, tabel</td>
+      <td>Cocok untuk peraturan, SK, panduan resmi, brosur</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-blue">Word Document</span></td>
+      <td><code>.docx .doc</code></td>
+      <td>docx2txt</td>
+      <td>Full teks, paragraph, heading</td>
+      <td>FAQ, surat edaran, SOP internal</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-ok">Spreadsheet</span></td>
+      <td><code>.csv .xlsx</code></td>
+      <td>pandas + openpyxl</td>
+      <td>Semua kolom dan baris dikonversi ke teks</td>
+      <td>Data jadwal pelatihan, daftar program, biaya</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-purple">Gambar</span></td>
+      <td><code>.png .jpg .jpeg</code></td>
+      <td>EasyOCR (deep learning)</td>
+      <td>OCR teks Indonesia + Inggris dari gambar</td>
+      <td>Poster/flyer informasi, screenshot dokumen, foto banner</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-warn">Teks Biasa</span></td>
+      <td><code>.txt</code></td>
+      <td>Built-in Python</td>
+      <td>Full teks langsung</td>
+      <td>FAQ manual, script, catatan internal</td>
+    </tr>
+  </table>
+  <div class="callout callout-note">
+    <div class="callout-icon">📌</div>
+    <div class="callout-body">
+      <p class="title">Tips Kualitas Dokumen</p>
+      <ul>
+        <li>PDF dengan teks selectable lebih baik daripada PDF hasil scan (gambar). pdfplumber dapat mengekstrak tabel dengan lebih akurat dibanding PDF hasil scan.</li>
+        <li>Untuk gambar/foto dokumen, kualitas resolusi minimal 150 DPI disarankan agar EasyOCR dapat membaca teks dengan akurat.</li>
+        <li>Dokumen dalam Bahasa Indonesia mendukung penuh, termasuk karakter khusus seperti é, ä, dll.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- BAB 9 -->
+<div class="chapter">
+  <div class="chapter-header">
+    <div class="chapter-num">9</div>
+    <div class="chapter-info">
+      <h2>Konfigurasi Environment</h2>
+      <p>Daftar semua variabel environment yang dibutuhkan sistem</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>9.1 Backend — <code>.env.production</code></h3>
+    <table>
+      <tr><th>Variabel</th><th>Contoh Nilai</th><th>Keterangan</th></tr>
+      <tr><td><code>GOOGLE_CLOUD_PROJECT</code></td><td>kada-491403</td><td>ID project Google Cloud yang sudah aktif Vertex AI</td></tr>
+      <tr><td><code>GOOGLE_CLOUD_REGION</code></td><td>us-central1</td><td>Region Vertex AI model deployment</td></tr>
+      <tr><td><code>GOOGLE_APPLICATION_CREDENTIALS</code></td><td>/app/credentials/gcp-key.json</td><td>Path ke Service Account Key JSON di dalam container</td></tr>
+      <tr><td><code>LLM_MODEL</code></td><td>gemini-2.5-flash</td><td>Model Gemini yang digunakan untuk generate jawaban</td></tr>
+      <tr><td><code>LLM_TEMPERATURE</code></td><td>0.2</td><td>Kreativitas LLM (0.0 = deterministik, 1.0 = kreatif)</td></tr>
+      <tr><td><code>EMBEDDING_MODEL</code></td><td>text-embedding-005</td><td>Model embedding Vertex AI untuk vector representation</td></tr>
+      <tr><td><code>MONGODB_URI</code></td><td>mongodb://bpt_admin:PASSWORD@mongodb:27017/bpt_db?authSource=admin</td><td>Koneksi MongoDB (nama host = nama service Docker)</td></tr>
+      <tr><td><code>MONGODB_DB_NAME</code></td><td>bpt_db</td><td>Nama database MongoDB</td></tr>
+      <tr><td><code>QDRANT_URL</code></td><td>http://qdrant:6333</td><td>URL Qdrant (nama host = nama service Docker)</td></tr>
+      <tr><td><code>QDRANT_COLLECTION</code></td><td>bpt_docs</td><td>Nama koleksi vektor di Qdrant untuk dokumen</td></tr>
+      <tr><td><code>CHUNK_SIZE</code></td><td>1000</td><td>Ukuran chunk teks dalam karakter saat split dokumen</td></tr>
+      <tr><td><code>CHUNK_OVERLAP</code></td><td>100</td><td>Overlap antar chunk untuk menjaga konteks batas chunk</td></tr>
+      <tr><td><code>RETRIEVER_K</code></td><td>3</td><td>Jumlah chunk yang diretrieve dari Qdrant untuk setiap query</td></tr>
+      <tr><td><code>REDIS_URL</code></td><td>redis://:PASSWORD@redis:6379/0</td><td>URL Redis dengan autentikasi</td></tr>
+      <tr><td><code>RAG_CACHE_ENABLED</code></td><td>1</td><td>Aktifkan exact cache (0 = nonaktif)</td></tr>
+      <tr><td><code>RAG_CACHE_TTL_SECONDS</code></td><td>3600</td><td>TTL cache jawaban dalam detik (1 jam)</td></tr>
+      <tr><td><code>SEMANTIC_CACHE_ENABLED</code></td><td>1</td><td>Aktifkan semantic cache (0 = nonaktif)</td></tr>
+      <tr><td><code>SEMANTIC_CACHE_MIN_SCORE</code></td><td>0.92</td><td>Threshold cosine similarity untuk semantic cache hit</td></tr>
+      <tr><td><code>ALLOWED_ORIGINS</code></td><td>https://chatbot.domain.go.id</td><td>Domain frontend yang diizinkan CORS (pisah koma jika lebih dari satu)</td></tr>
+      <tr><td><code>SUPPORT_WHATSAPP</code></td><td>+628111166784</td><td>Nomor WhatsApp support (ditampilkan saat info tidak ditemukan)</td></tr>
+      <tr><td><code>SUPPORT_TICKETING_URL</code></td><td>https://ticketing.domain.go.id</td><td>URL sistem ticketing (ditampilkan saat info tidak ditemukan)</td></tr>
+      <tr><td><code>SUPPORT_EMAIL</code></td><td>bpt@komdigi.go.id</td><td>Email support BPT Komdigi</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>9.2 Frontend — <code>.env.production</code></h3>
+    <table>
+      <tr><th>Variabel</th><th>Contoh Nilai</th><th>Keterangan</th></tr>
+      <tr><td><code>BACKEND_API_URL</code></td><td>http://backend:8000</td><td>Server-side: Next.js → Backend (Docker internal, tanpa SSL overhead)</td></tr>
+      <tr><td><code>NEXT_PUBLIC_BACKEND_API_URL</code></td><td>https://api.chatbot.domain.go.id</td><td>Client-side: Browser → Backend (URL publik dengan HTTPS)</td></tr>
+      <tr><td><code>MONGODB_URI</code></td><td>mongodb://bpt_admin:PASSWORD@mongodb:27017/bpt_db?authSource=admin</td><td>Koneksi MongoDB untuk autentikasi admin (model Admin.js)</td></tr>
+      <tr><td><code>JWT_SECRET</code></td><td>[string random 48 byte base64]</td><td>Secret untuk sign &amp; verify JWT token admin. WAJIB acak dan panjang.</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>9.3 Root Docker Compose — <code>.env</code></h3>
+    <table>
+      <tr><th>Variabel</th><th>Keterangan</th></tr>
+      <tr><td><code>MONGO_ROOT_PASSWORD</code></td><td>Password root MongoDB. Digunakan oleh container MongoDB saat inisialisasi.</td></tr>
+      <tr><td><code>REDIS_PASSWORD</code></td><td>Password Redis. Dikonfigurasi di startup command Docker dan dipakai semua service yang konek ke Redis.</td></tr>
+    </table>
+    <div class="callout callout-danger">
+      <div class="callout-icon">🔐</div>
+      <div class="callout-body">
+        <p class="title">Keamanan File Environment</p>
+        <ul>
+          <li>Semua file <code>.env</code> dan <code>gcp-key.json</code> TIDAK boleh dimasukkan ke Git repository</li>
+          <li>File-file ini wajib diupload secara manual ke VPS melalui SCP atau SFTP</li>
+          <li>Password MongoDB dan Redis harus berbeda satu sama lain dan minimal 16 karakter</li>
+          <li>JWT Secret harus berupa string acak minimal 48 byte (generate dengan PowerShell atau OpenSSL)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p><strong>LENTERA Chatbot System — Dokumen Teknis v1.0</strong></p>
+  <p style="margin-top:5px">BPT Komdigi, Kementerian Komunikasi dan Digital RI · April 2026</p>
+  <p style="margin-top:5px;font-size:.7rem;color:var(--gray-300)">Dokumen ini bersifat teknis dan ditujukan untuk tim IT/developer yang bertanggung jawab atas implementasi dan pemeliharaan sistem.</p>
+</div>
+
+<script>
+window.onload = () => {
+  const hint = document.createElement('div');
+  hint.innerHTML = '💾 Untuk simpan sebagai PDF: <strong>Ctrl+P</strong> → "Save as PDF" → aktifkan "Background graphics" → Save';
+  Object.assign(hint.style, {
+    position:'fixed', bottom:'20px', left:'50%', transform:'translateX(-50%)',
+    background:'#1e40af', color:'white', padding:'12px 24px',
+    borderRadius:'999px', fontSize:'12.5px', fontFamily:'Inter,sans-serif',
+    boxShadow:'0 4px 20px rgba(0,0,0,.25)', zIndex:'9999',
+    cursor:'pointer', whiteSpace:'nowrap', lineHeight:'1.5'
+  });
+  hint.onclick = () => { window.print(); hint.remove(); };
+  document.body.appendChild(hint);
+  setTimeout(() => { if(hint.parentNode) hint.remove(); }, 10000);
+};
+</script>
+</body>
+</html>

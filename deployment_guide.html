@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panduan Deploy BPT Komdigi Chatbot — VPS + Docker</title>
+  <style>
+    /* ── Base ── */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:      #2563eb;
+      --blue-light:#eff6ff;
+      --blue-dark: #1e40af;
+      --green:     #16a34a;
+      --green-light:#f0fdf4;
+      --red:       #dc2626;
+      --red-light: #fef2f2;
+      --amber:     #d97706;
+      --amber-light:#fffbeb;
+      --gray-50:   #f9fafb;
+      --gray-100:  #f3f4f6;
+      --gray-200:  #e5e7eb;
+      --gray-300:  #d1d5db;
+      --gray-500:  #6b7280;
+      --gray-600:  #4b5563;
+      --gray-700:  #374151;
+      --gray-800:  #1f2937;
+      --gray-900:  #111827;
+      --code-bg:   #0f172a;
+      --code-text: #e2e8f0;
+    }
+
+    html { font-size: 14px; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--gray-800);
+      background: white;
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 40px 80px;
+    }
+
+    /* ── Cover Page ── */
+    .cover {
+      text-align: center;
+      padding: 60px 40px 50px;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 40%, #2563eb 100%);
+      border-radius: 16px;
+      color: white;
+      page-break-after: always;
+    }
+    .cover .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .cover .logo-badge {
+      width: 56px; height: 56px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .cover h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+    .cover .subtitle {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.78);
+      margin-bottom: 36px;
+      font-weight: 400;
+    }
+    .cover .meta-grid {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .cover .meta-item {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 14px 20px;
+      min-width: 140px;
+    }
+    .cover .meta-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-bottom: 4px; }
+    .cover .meta-value { font-size: 1rem; font-weight: 600; }
+
+    /* ── TOC ── */
+    .toc {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 40px;
+      page-break-after: always;
+    }
+    .toc h2 { font-size: 1.1rem; font-weight: 700; color: var(--gray-900); margin-bottom: 16px; border-bottom: 2px solid var(--blue); padding-bottom: 8px; }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin-bottom: 6px; color: var(--gray-700); }
+    .toc li span { color: var(--blue); font-weight: 600; }
+    .toc li small { color: var(--gray-500); margin-left: 6px; }
+
+    /* ── Phase Header ── */
+    .phase {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+      color: white;
+      border-radius: 12px;
+      padding: 20px 28px;
+      margin: 48px 0 24px;
+      page-break-before: always;
+    }
+    .phase:first-of-type { page-break-before: avoid; }
+    .phase .phase-num {
+      font-size: 2rem; font-weight: 800;
+      background: rgba(255,255,255,0.15);
+      width: 52px; height: 52px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .phase .phase-info h2 { font-size: 1.25rem; font-weight: 700; }
+    .phase .phase-info p  { font-size: 0.85rem; opacity: 0.8; margin-top: 2px; }
+
+    /* ── Step ── */
+    .step {
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .step-num {
+      background: var(--blue);
+      color: white;
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .step-header h3 { font-size: 1rem; font-weight: 700; color: var(--gray-900); }
+    .step-header .badge {
+      margin-left: auto;
+      font-size: 0.72rem; font-weight: 600;
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .badge-laptop { background: #dbeafe; color: #1e40af; }
+    .badge-vps    { background: #dcfce7; color: #15803d; }
+    .badge-docker { background: #f3e8ff; color: #7c3aed; }
+
+    .step-body { padding: 18px 20px; }
+    .step-body p { margin-bottom: 12px; color: var(--gray-700); }
+    .step-body p:last-child { margin-bottom: 0; }
+
+    /* ── Code Block ── */
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 8px;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+    .code-label {
+      display: flex;
+      align-items: center;
+      padding: 7px 14px;
+      background: rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #94a3b8;
+      gap: 8px;
+    }
+    .code-label .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .code-label .dot-r { background: #f87171; }
+    .code-label .dot-y { background: #fbbf24; }
+    .code-label .dot-g { background: #34d399; }
+    pre {
+      padding: 14px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--code-text);
+      line-height: 1.65;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Syntax color helpers */
+    .cm  { color: #64748b; }  /* comment */
+    .ck  { color: #7dd3fc; }  /* keyword/key */
+    .cv  { color: #86efac; }  /* value/string */
+    .cc  { color: #fde68a; }  /* command */
+    .cn  { color: #f9a8d4; }  /* number */
+
+    /* ── Callout boxes ── */
+    .callout {
+      display: flex;
+      gap: 12px;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 12px 0;
+      border-left: 4px solid;
+    }
+    .callout-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+    .callout-body { font-size: 0.85rem; color: var(--gray-700); line-height: 1.55; }
+    .callout-body strong { display: block; margin-bottom: 4px; font-size: 0.88rem; }
+
+    .callout-warn  { background: var(--amber-light); border-color: var(--amber); }
+    .callout-tip   { background: var(--blue-light);  border-color: var(--blue);  }
+    .callout-ok    { background: var(--green-light); border-color: var(--green); }
+    .callout-danger{ background: var(--red-light);   border-color: var(--red);   }
+
+    /* ── Table ── */
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.83rem; }
+    th { background: var(--gray-800); color: white; padding: 9px 12px; text-align: left; font-weight: 600; }
+    td { padding: 8px 12px; border-bottom: 1px solid var(--gray-200); color: var(--gray-700); }
+    tr:nth-child(even) td { background: var(--gray-50); }
+    td code, th code { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; background: var(--gray-100); padding: 1px 5px; border-radius: 4px; }
+    .td-ok   { color: var(--green); font-weight: 600; }
+    .td-warn { color: var(--amber); font-weight: 600; }
+    .td-no   { color: var(--red);   font-weight: 600; }
+
+    /* ── Misc ── */
+    h4 { font-size: 0.9rem; font-weight: 700; color: var(--gray-700); margin: 16px 0 8px; }
+    .divider { height: 1px; background: var(--gray-200); margin: 32px 0; }
+    .inline-code { font-family: 'JetBrains Mono', monospace; font-size: 0.82em; background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 4px; padding: 1px 6px; color: var(--blue-dark); }
+    ul.checklist { list-style: none; padding: 0; }
+    ul.checklist li { padding: 5px 0 5px 28px; position: relative; font-size: 0.85rem; color: var(--gray-700); }
+    ul.checklist li::before { content: '☐'; position: absolute; left: 4px; color: var(--blue); }
+
+    /* ── Print ── */
+    @media print {
+      body { padding: 20px 20px 40px; font-size: 12px; }
+      .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .phase { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .code-block { -webkit-print-color-adjust: exact; print-color-adjust: exact; page-break-inside: avoid; }
+      .step { page-break-inside: avoid; }
+      .callout { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ COVER ═══════════════ -->
+<div class="cover">
+  <div class="logo-row">
+    <div class="logo-badge">🤖</div>
+    <div style="text-align:left">
+      <div style="font-size:0.8rem;opacity:0.7;letter-spacing:2px;text-transform:uppercase">BPT Komdigi</div>
+      <div style="font-size:1.1rem;font-weight:700">Chatbot System</div>
+    </div>
+  </div>
+  <h1>Panduan Deploy ke VPS<br/>dengan Docker</h1>
+  <p class="subtitle">Panduan lengkap setup MongoDB lokal, buat akun admin,<br/>dan deploy semua service menggunakan Docker Compose</p>
+  <div class="meta-grid">
+    <div class="meta-item">
+      <div class="meta-label">Versi</div>
+      <div class="meta-value">1.0.0</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Tanggal</div>
+      <div class="meta-value">April 2026</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">Stack</div>
+      <div class="meta-value">Docker Compose</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-label">OS Target</div>
+      <div class="meta-value">Ubuntu 22.04</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TOC ═══════════════ -->
+<div class="toc">
+  <h2>📋 Daftar Isi</h2>
+  <ol>
+    <li><span>Arsitektur Sistem</span> <small>— gambaran keseluruhan</small></li>
+    <li><span>Fase 1 — Persiapan di Laptop</span> <small>— isi env, download GCP key, DNS</small></li>
+    <li><span>Fase 2 — Setup VPS</span> <small>— install Docker, Nginx, Certbot</small></li>
+    <li><span>Fase 3 — Upload Project</span> <small>— clone/SCP + upload secrets</small></li>
+    <li><span>Fase 4 — Jalankan Docker</span> <small>— build & start semua container</small></li>
+    <li><span>Fase 5 — Buat Akun Admin</span> <small>— seed MongoDB lokal</small></li>
+    <li><span>Fase 6 — Verifikasi</span> <small>— test semua endpoint & login</small></li>
+    <li><span>Fase 7 — Operasional Harian</span> <small>— update, backup, monitoring</small></li>
+    <li><span>Troubleshooting</span> <small>— solusi masalah umum</small></li>
+  </ol>
+</div>
+
+<!-- ═══════════════ ARSITEKTUR ═══════════════ -->
+<div class="phase" style="page-break-before:avoid;margin-top:0">
+  <div class="phase-num">📐</div>
+  <div class="phase-info">
+    <h2>Arsitektur Sistem</h2>
+    <p>Gambaran keseluruhan service yang akan berjalan di VPS</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">ℹ</div>
+    <h3>Stack &amp; Port</h3>
+  </div>
+  <div class="step-body">
+    <table>
+      <tr><th>Service</th><th>Image Docker</th><th>Port Internal</th><th>Keterangan</th></tr>
+      <tr><td><strong>MongoDB</strong></td><td><code>mongo:7</code></td><td>27017</td><td>Database utama (tidak expose ke publik)</td></tr>
+      <tr><td><strong>Qdrant</strong></td><td><code>qdrant/qdrant</code></td><td>6333</td><td>Vector store untuk RAG (tidak expose ke publik)</td></tr>
+      <tr><td><strong>Redis</strong></td><td><code>redis:7-alpine</code></td><td>6379</td><td>Cache &amp; rate limiting (tidak expose ke publik)</td></tr>
+      <tr><td><strong>Backend</strong></td><td>Build dari source</td><td>8000</td><td>FastAPI Python — di-proxy oleh Nginx</td></tr>
+      <tr><td><strong>Frontend</strong></td><td>Build dari source</td><td>3000</td><td>Next.js — di-proxy oleh Nginx</td></tr>
+      <tr><td><strong>Nginx</strong></td><td>Langsung di VPS</td><td>80 / 443</td><td>Reverse proxy + SSL termination</td></tr>
+    </table>
+
+    <div class="callout callout-tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <strong>Kenapa MongoDB lokal Docker?</strong>
+        Lebih hemat biaya (tidak perlu MongoDB Atlas), data tersimpan di volume Docker sehingga persist walau container restart, dan tidak ada biaya per-request ke cloud.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FASE 1 ═══════════════ -->
+<div class="phase">
+  <div class="phase-num">1</div>
+  <div class="phase-info">
+    <h2>Fase 1 — Persiapan di Laptop</h2>
+    <p>Isi semua file konfigurasi sebelum upload ke VPS</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">1</div>
+    <h3>Tentukan Nilai Password &amp; Domain</h3>
+    <span class="badge badge-laptop">💻 Laptop</span>
+  </div>
+  <div class="step-body">
+    <p>Tulis nilai-nilai ini di catatan. Akan dipakai di banyak file — <strong>harus konsisten</strong>.</p>
+    <table>
+      <tr><th>Variabel</th><th>Isi dengan</th><th>Contoh</th></tr>
+      <tr><td>MONGO_PASSWORD</td><td>Password bebas, min 16 karakter</td><td><code>xK9mPq2rLw8nV3z!</code></td></tr>
+      <tr><td>REDIS_PASSWORD</td><td>Password berbeda, min 16 karakter</td><td><code>aZ4vBn7cQm1pRs6#</code></td></tr>
+      <tr><td>DOMAIN_FRONTEND</td><td>Domain chatbot</td><td><code>chatbot.komdigi.go.id</code></td></tr>
+      <tr><td>DOMAIN_API</td><td>Subdomain backend</td><td><code>api.chatbot.komdigi.go.id</code></td></tr>
+      <tr><td>JWT_SECRET</td><td>String random panjang</td><td>Generate di Step 4</td></tr>
+    </table>
+    <div class="callout callout-danger">
+      <div class="callout-icon">🚫</div>
+      <div class="callout-body"><strong>Jangan pakai password yang sama untuk MongoDB dan Redis!</strong> Dan jangan gunakan contoh nilai di tabel ini secara langsung.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">2</div>
+    <h3>Isi File <span class="inline-code">bpt-chatbot/.env</span> — Password Docker</h3>
+    <span class="badge badge-laptop">💻 Laptop</span>
+  </div>
+  <div class="step-body">
+    <p>Buka file <span class="inline-code">d:\KADA\bpt-chatbot\.env</span> dan isi:</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;.env</div>
+      <pre><span class="cm"># Password MongoDB root</span>
+<span class="ck">MONGO_ROOT_PASSWORD</span>=<span class="cv">xK9mPq2rLw8nV3z!</span>
+
+<span class="cm"># Password Redis</span>
+<span class="ck">REDIS_PASSWORD</span>=<span class="cv">aZ4vBn7cQm1pRs6#</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">3</div>
+    <h3>Isi File <span class="inline-code">.env.production</span> Backend (FastAPI)</h3>
+    <span class="badge badge-laptop">💻 Laptop</span>
+  </div>
+  <div class="step-body">
+    <p>Buka <span class="inline-code">bpt-komdigi-chatbot-BE/.env.production</span> dan isi setiap baris:</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;bpt-komdigi-chatbot-BE/.env.production</div>
+      <pre><span class="cm"># Google Vertex AI</span>
+<span class="ck">GOOGLE_CLOUD_PROJECT</span>=<span class="cv">kada-491403</span>
+<span class="ck">GOOGLE_CLOUD_REGION</span>=<span class="cv">us-central1</span>
+<span class="ck">GOOGLE_APPLICATION_CREDENTIALS</span>=<span class="cv">/app/credentials/gcp-key.json</span>
+<span class="ck">LLM_MODEL</span>=<span class="cv">gemini-2.5-flash</span>
+<span class="ck">LLM_TEMPERATURE</span>=<span class="cv">0.2</span>
+<span class="ck">EMBEDDING_MODEL</span>=<span class="cv">text-embedding-005</span>
+
+<span class="cm"># MongoDB — "mongodb" = nama service Docker, BUKAN "localhost"</span>
+<span class="ck">MONGODB_URI</span>=<span class="cv">mongodb://bpt_admin:xK9mPq2rLw8nV3z!@mongodb:27017/bpt_db?authSource=admin</span>
+<span class="ck">MONGODB_DB_NAME</span>=<span class="cv">bpt_db</span>
+
+<span class="cm"># Qdrant — "qdrant" = nama service Docker</span>
+<span class="ck">QDRANT_URL</span>=<span class="cv">http://qdrant:6333</span>
+<span class="ck">QDRANT_COLLECTION</span>=<span class="cv">bpt_docs</span>
+<span class="ck">CHUNK_SIZE</span>=<span class="cv">1000</span>
+<span class="ck">CHUNK_OVERLAP</span>=<span class="cv">100</span>
+<span class="ck">RETRIEVER_K</span>=<span class="cv">3</span>
+
+<span class="cm"># Redis — "redis" = nama service Docker</span>
+<span class="ck">REDIS_URL</span>=<span class="cv">redis://:aZ4vBn7cQm1pRs6#@redis:6379/0</span>
+<span class="ck">RAG_CACHE_TTL_SECONDS</span>=<span class="cv">3600</span>
+<span class="ck">RAG_CACHE_ENABLED</span>=<span class="cv">1</span>
+<span class="ck">RAG_CACHE_PREFIX</span>=<span class="cv">rag:cache:v1</span>
+<span class="ck">RAG_DATA_VERSION_KEY</span>=<span class="cv">rag:data_version</span>
+
+<span class="cm"># Semantic Cache</span>
+<span class="ck">SEMANTIC_CACHE_ENABLED</span>=<span class="cv">1</span>
+<span class="ck">SEMANTIC_CACHE_COLLECTION</span>=<span class="cv">rag_query_cache</span>
+<span class="ck">SEMANTIC_CACHE_LIMIT</span>=<span class="cv">5</span>
+<span class="ck">SEMANTIC_CACHE_MIN_SCORE</span>=<span class="cv">0.92</span>
+<span class="ck">SEMANTIC_CACHE_MIN_TOKEN_COVERAGE</span>=<span class="cv">0.65</span>
+
+<span class="cm"># Kontak support</span>
+<span class="ck">SUPPORT_WHATSAPP</span>=<span class="cv">+628111166784</span>
+<span class="ck">SUPPORT_TICKETING_URL</span>=<span class="cv">https://example.com/ticketing</span>
+<span class="ck">SUPPORT_EMAIL</span>=<span class="cv">bpt@komdigi.go.id</span>
+
+<span class="cm"># CORS — ganti dengan domain frontend kamu</span>
+<span class="ck">ALLOWED_ORIGINS</span>=<span class="cv">https://chatbot.komdigi.go.id,https://www.chatbot.komdigi.go.id</span>
+
+<span class="cm"># Server</span>
+<span class="ck">HOST</span>=<span class="cv">0.0.0.0</span>
+<span class="ck">PORT</span>=<span class="cv">8000</span></pre>
+    </div>
+    <div class="callout callout-warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body"><strong>Perhatikan nama host!</strong> Di dalam Docker Compose, service berkomunikasi menggunakan <strong>nama service</strong>: <code>mongodb</code>, <code>redis</code>, <code>qdrant</code> — bukan <code>localhost</code>. Password harus sama persis dengan yang ada di file <code>.env</code> root.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">4</div>
+    <h3>Generate JWT Secret</h3>
+    <span class="badge badge-laptop">💻 Laptop</span>
+  </div>
+  <div class="step-body">
+    <p>Jalankan perintah ini di <strong>PowerShell</strong> untuk generate string acak:</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;PowerShell</div>
+      <pre><span class="cc">[Convert]::ToBase64String</span>((1..48 | ForEach-Object { [byte](Get-Random -Max 256) }))</pre>
+    </div>
+    <p>Contoh output: <span class="inline-code">7Kp2mN8xQw4rL1tV9bJ5cH3nY6uE0aSfG2dM7oP1q==</span></p>
+    <p><strong>Simpan output ini</strong> — akan dipakai di step berikutnya.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">5</div>
+    <h3>Isi File <span class="inline-code">.env.production</span> Frontend (Next.js)</h3>
+    <span class="badge badge-laptop">💻 Laptop</span>
+  </div>
+  <div class="step-body">
+    <p>Buka <span class="inline-code">bpt-komdigi-chatbot/.env.production</span>:</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;bpt-komdigi-chatbot/.env.production</div>
+      <pre><span class="cm"># Server-to-server: Next.js → Backend (Docker internal)</span>
+<span class="ck">BACKEND_API_URL</span>=<span class="cv">http://backend:8000</span>
+
+<span class="cm"># Browser → Backend (URL publik dengan SSL)</span>
+<span class="ck">NEXT_PUBLIC_BACKEND_API_URL</span>=<span class="cv">https://api.chatbot.komdigi.go.id</span>
+
+<span class="cm"># MongoDB lokal Docker (password HARUS sama dengan .env root)</span>
+<span class="ck">MONGODB_URI</span>=<span class="cv">mongodb://bpt_admin:xK9mPq2rLw8nV3z!@mongodb:27017/bpt_db?authSource=admin</span>
+
+<span class="cm"># JWT Secret dari Step 4</span>
+<span class="ck">JWT_SECRET</span>=<span class="cv">7Kp2mN8xQw4rL1tV9bJ5cH3nY6uE0aSfG2dM7oP1q==</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">6</div>
+    <h3>Download GCP Service Account Key</h3>
+    <span class="badge badge-laptop">💻 Laptop</span>
+  </div>
+  <div class="step-body">
+    <ol style="padding-left:20px;font-size:0.87rem;color:var(--gray-700);line-height:2">
+      <li>Buka <strong>console.cloud.google.com</strong></li>
+      <li>Pilih project <span class="inline-code">kada-491403</span> di dropdown atas</li>
+      <li>Menu kiri → <strong>IAM &amp; Admin → Service Accounts</strong></li>
+      <li>Klik service account yang dipakai → tab <strong>Keys</strong></li>
+      <li>Klik <strong>Add Key → Create new key → JSON → Create</strong></li>
+      <li>File JSON otomatis ter-download</li>
+      <li><strong>Rename file menjadi <span class="inline-code">gcp-key.json</span></strong></li>
+      <li>Simpan di Desktop sementara</li>
+    </ol>
+    <div class="callout callout-danger">
+      <div class="callout-icon">🔐</div>
+      <div class="callout-body"><strong>File ini sangat rahasia!</strong> Jangan upload ke GitHub, jangan share ke siapapun. Akan di-upload manual ke VPS di fase berikutnya.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">7</div>
+    <h3>Setup DNS Domain</h3>
+    <span class="badge badge-laptop">💻 Laptop</span>
+  </div>
+  <div class="step-body">
+    <p>Di panel DNS domain kamu (Cloudflare / cPanel), tambahkan 2 A Record:</p>
+    <table>
+      <tr><th>Type</th><th>Name</th><th>Content (IP VPS)</th><th>TTL</th></tr>
+      <tr><td>A</td><td><code>chatbot</code></td><td><code>IP_VPS_KAMU</code></td><td>Auto</td></tr>
+      <tr><td>A</td><td><code>api.chatbot</code></td><td><code>IP_VPS_KAMU</code></td><td>Auto</td></tr>
+    </table>
+    <p>Tunggu 1–5 menit, lalu verifikasi DNS sudah propagate:</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;PowerShell</div>
+      <pre><span class="cm"># Harus reply dari IP VPS kamu</span>
+<span class="cc">nslookup</span> chatbot.komdigi.go.id</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FASE 2 ═══════════════ -->
+<div class="phase">
+  <div class="phase-num">2</div>
+  <div class="phase-info">
+    <h2>Fase 2 — Setup VPS</h2>
+    <p>Install Docker, Nginx, dan Certbot di server</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">8</div>
+    <h3>Masuk ke VPS via SSH</h3>
+    <span class="badge badge-vps">🖥️ VPS</span>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;PowerShell (Laptop)</div>
+      <pre><span class="cm"># Login SSH</span>
+<span class="cc">ssh</span> ubuntu@IP_VPS_KAMU
+
+<span class="cm"># Jika pakai file .pem (AWS/GCP):</span>
+<span class="cc">ssh</span> -i C:\Users\LENOVO\Downloads\vps-key.pem ubuntu@IP_VPS_KAMU</pre>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">9</div>
+    <h3>Install Docker</h3>
+    <span class="badge badge-vps">🖥️ VPS</span>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cm"># Update sistem</span>
+<span class="cc">sudo apt update</span> &amp;&amp; <span class="cc">sudo apt upgrade</span> -y
+
+<span class="cm"># Install Docker via script resmi</span>
+<span class="cc">curl</span> -fsSL https://get.docker.com | sh
+
+<span class="cm"># Tambahkan user ke group docker</span>
+<span class="cc">sudo usermod</span> -aG docker $USER
+
+<span class="cm"># Apply perubahan group TANPA logout</span>
+<span class="cc">newgrp</span> docker
+
+<span class="cm"># Verifikasi</span>
+<span class="cc">docker</span> --version
+<span class="cc">docker compose</span> version</pre>
+    </div>
+    <p>Output yang diharapkan: <span class="inline-code">Docker version 27.x.x</span> dan <span class="inline-code">Docker Compose version v2.x.x</span></p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">10</div>
+    <h3>Install Nginx &amp; Certbot (SSL Gratis)</h3>
+    <span class="badge badge-vps">🖥️ VPS</span>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cm"># Install Nginx dan Certbot</span>
+<span class="cc">sudo apt install</span> nginx certbot python3-certbot-nginx -y
+
+<span class="cm"># Aktifkan Nginx</span>
+<span class="cc">sudo systemctl enable</span> --now nginx
+
+<span class="cm"># Verifikasi berjalan</span>
+<span class="cc">sudo systemctl status</span> nginx
+<span class="cm"># Harus ada: "active (running)"</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FASE 3 ═══════════════ -->
+<div class="phase">
+  <div class="phase-num">3</div>
+  <div class="phase-info">
+    <h2>Fase 3 — Upload Project &amp; Secrets</h2>
+    <p>Clone atau upload kode, lalu upload file secrets secara manual</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">11</div>
+    <h3>Upload Project ke VPS</h3>
+    <span class="badge badge-vps">🖥️ VPS</span>
+  </div>
+  <div class="step-body">
+    <h4>Opsi A — Via Git (Direkomendasikan)</h4>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cc">git clone</span> https://github.com/USERNAME/REPONAME.git /home/$USER/bpt-chatbot
+<span class="cc">cd</span> /home/$USER/bpt-chatbot</pre>
+    </div>
+    <h4>Opsi B — SCP dari Laptop (jika belum ada di GitHub)</h4>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;PowerShell (Laptop — buka tab baru)</div>
+      <pre><span class="cc">scp</span> -r D:\KADA\bpt-chatbot ubuntu@IP_VPS:/home/ubuntu/bpt-chatbot</pre>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">12</div>
+    <h3>Upload File Secrets Manual</h3>
+    <span class="badge badge-laptop">💻 Laptop → VPS</span>
+  </div>
+  <div class="step-body">
+    <p>File-file ini TIDAK boleh di-commit ke Git. Upload manual via SCP:</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;PowerShell (Laptop)</div>
+      <pre><span class="cm"># 1. Password Docker</span>
+<span class="cc">scp</span> D:\KADA\bpt-chatbot\.env ubuntu@IP_VPS:/home/ubuntu/bpt-chatbot/.env
+
+<span class="cm"># 2. .env.production backend</span>
+<span class="cc">scp</span> D:\KADA\bpt-chatbot\bpt-komdigi-chatbot-BE\.env.production `
+    ubuntu@IP_VPS:/home/ubuntu/bpt-chatbot/bpt-komdigi-chatbot-BE/.env.production
+
+<span class="cm"># 3. .env.production frontend</span>
+<span class="cc">scp</span> D:\KADA\bpt-chatbot\bpt-komdigi-chatbot\.env.production `
+    ubuntu@IP_VPS:/home/ubuntu/bpt-chatbot/bpt-komdigi-chatbot/.env.production
+
+<span class="cm"># 4. GCP Service Account Key</span>
+<span class="cc">scp</span> C:\Users\LENOVO\Desktop\gcp-key.json `
+    ubuntu@IP_VPS:/home/ubuntu/bpt-chatbot/credentials/gcp-key.json</pre>
+    </div>
+    <p>Verifikasi di VPS (tab SSH):</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cc">ls</span> -la /home/ubuntu/bpt-chatbot/credentials/
+<span class="cm"># Harus ada: gcp-key.json</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">13</div>
+    <h3>Setup Nginx &amp; SSL Certificate</h3>
+    <span class="badge badge-vps">🖥️ VPS</span>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cm"># Copy config Nginx dari project</span>
+<span class="cc">sudo cp</span> /home/ubuntu/bpt-chatbot/nginx.conf /etc/nginx/sites-available/bpt-chatbot
+
+<span class="cm"># Hapus config default, aktifkan config baru</span>
+<span class="cc">sudo rm</span> -f /etc/nginx/sites-enabled/default
+<span class="cc">sudo ln</span> -s /etc/nginx/sites-available/bpt-chatbot /etc/nginx/sites-enabled/
+
+<span class="cm"># Test syntax Nginx</span>
+<span class="cc">sudo nginx</span> -t
+<span class="cm"># Harus: "syntax is ok" dan "test is successful"</span>
+
+<span class="cc">sudo systemctl reload</span> nginx
+
+<span class="cm"># Dapatkan SSL certificate gratis dari Let's Encrypt</span>
+<span class="cm"># Ganti domain di bawah dengan domain kamu</span>
+<span class="cc">sudo certbot</span> --nginx \
+  -d chatbot.komdigi.go.id \
+  -d api.chatbot.komdigi.go.id
+
+<span class="cm"># Ikuti prompt: masukkan email → A → N</span>
+<span class="cm"># Certbot otomatis update nginx.conf dengan SSL</span>
+
+<span class="cc">sudo nginx</span> -t &amp;&amp; <span class="cc">sudo systemctl reload</span> nginx</pre>
+    </div>
+    <div class="callout callout-ok">
+      <div class="callout-icon">✅</div>
+      <div class="callout-body">SSL dari Let's Encrypt berlaku 90 hari dan auto-renew oleh Certbot. Tidak perlu perpanjang manual.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FASE 4 ═══════════════ -->
+<div class="phase">
+  <div class="phase-num">4</div>
+  <div class="phase-info">
+    <h2>Fase 4 — Jalankan Docker Compose</h2>
+    <p>Build image dan start semua container</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">14</div>
+    <h3>Build &amp; Start Semua Service</h3>
+    <span class="badge badge-docker">🐳 Docker</span>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cc">cd</span> /home/ubuntu/bpt-chatbot
+
+<span class="cm"># Build image dan jalankan semua container</span>
+<span class="cm"># -d = background (detached)</span>
+<span class="cm"># --build = paksa rebuild image</span>
+<span class="cc">docker compose up</span> -d --build</pre>
+    </div>
+    <div class="callout callout-warn">
+      <div class="callout-icon">⏳</div>
+      <div class="callout-body"><strong>Proses ini memakan waktu 10–25 menit!</strong> Backend perlu install EasyOCR, PyTorch, sentence-transformers, dan semua ML dependencies. Jangan interupsi proses ini.</div>
+    </div>
+    <p>Pantau progress build:</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cm"># Log semua service (Ctrl+C untuk stop pantau)</span>
+<span class="cc">docker compose logs</span> -f
+
+<span class="cm"># Atau backend saja</span>
+<span class="cc">docker compose logs</span> -f backend</pre>
+    </div>
+    <p>Tunggu hingga muncul:</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Output yang diharapkan</div>
+      <pre><span class="cv">bpt_backend  | INFO:     Application startup complete.</span>
+<span class="cv">bpt_backend  | INFO:     Uvicorn running on http://0.0.0.0:8000</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">15</div>
+    <h3>Cek Status Container</h3>
+    <span class="badge badge-docker">🐳 Docker</span>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cc">docker compose ps</span></pre>
+    </div>
+    <p>Output yang diharapkan (semua STATUS = <strong>running</strong> atau <strong>healthy</strong>):</p>
+    <table>
+      <tr><th>NAME</th><th>STATUS</th><th>PORTS</th></tr>
+      <tr><td>bpt_mongodb</td><td class="td-ok">running (healthy)</td><td>27017/tcp</td></tr>
+      <tr><td>bpt_qdrant</td><td class="td-ok">running (healthy)</td><td>6333/tcp</td></tr>
+      <tr><td>bpt_redis</td><td class="td-ok">running (healthy)</td><td>6379/tcp</td></tr>
+      <tr><td>bpt_backend</td><td class="td-ok">running (healthy)</td><td>0.0.0.0:8000->8000/tcp</td></tr>
+      <tr><td>bpt_frontend</td><td class="td-ok">running (healthy)</td><td>0.0.0.0:3000->3000/tcp</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════ FASE 5 ═══════════════ -->
+<div class="phase">
+  <div class="phase-num">5</div>
+  <div class="phase-info">
+    <h2>Fase 5 — Buat Akun Admin</h2>
+    <p>Seed akun admin pertama ke MongoDB lokal Docker</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">16</div>
+    <h3>Jalankan Seed Script di dalam Container Frontend</h3>
+    <span class="badge badge-docker">🐳 Docker</span>
+  </div>
+  <div class="step-body">
+    <p>Script <span class="inline-code">seedAdmin.mjs</span> harus dijalankan di dalam container frontend karena membutuhkan package <span class="inline-code">mongoose</span> dan <span class="inline-code">bcryptjs</span> yang sudah terinstall di sana.</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cm"># Masuk ke dalam container frontend</span>
+<span class="cc">docker exec</span> -it bpt_frontend sh
+
+<span class="cm"># Di dalam container, jalankan seed script</span>
+<span class="cm"># Ganti password MongoDB sesuai yang kamu tentukan</span>
+<span class="ck">MONGODB_URI</span>=<span class="cv">"mongodb://bpt_admin:xK9mPq2rLw8nV3z!@mongodb:27017/bpt_db?authSource=admin"</span> \
+  <span class="cc">node</span> scripts/seedAdmin.mjs
+
+<span class="cm"># Keluar dari container setelah selesai</span>
+<span class="cc">exit</span></pre>
+    </div>
+    <p>Output yang diharapkan:</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Output</div>
+      <pre><span class="cv">Connected to MongoDB</span>
+<span class="cv">Created admin: admin</span>
+<span class="cv">Created admin: operator1</span>
+<span class="cv">Seeding complete!</span></pre>
+    </div>
+    <div class="callout callout-ok">
+      <div class="callout-icon">🔄</div>
+      <div class="callout-body">Script ini <strong>idempotent</strong> — jika dijalankan dua kali, tidak akan duplikat. Admin yang sudah ada akan dilewati.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">17</div>
+    <h3>Verifikasi Akun Admin di MongoDB</h3>
+    <span class="badge badge-docker">🐳 Docker</span>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cm"># Masuk ke MongoDB shell</span>
+<span class="cc">docker exec</span> -it bpt_mongodb mongosh \
+  --authenticationDatabase admin \
+  -u bpt_admin \
+  -p <span class="cv">"xK9mPq2rLw8nV3z!"</span>
+
+<span class="cm"># Pilih database</span>
+<span class="cc">use</span> bpt_db
+
+<span class="cm"># Lihat semua admin (tanpa kolom password)</span>
+db.admins.find({}, { password: <span class="cn">0</span> }).pretty()
+
+<span class="cm"># Keluar</span>
+<span class="cc">quit()</span></pre>
+    </div>
+    <p>Akun default yang dibuat:</p>
+    <table>
+      <tr><th>Username</th><th>Password Default</th><th>Role</th></tr>
+      <tr><td><code>admin</code></td><td><code>Admin@123</code></td><td>Super Admin</td></tr>
+      <tr><td><code>operator1</code></td><td><code>Operator@2025</code></td><td>Operator Konten</td></tr>
+    </table>
+    <div class="callout callout-danger">
+      <div class="callout-icon">🔐</div>
+      <div class="callout-body"><strong>Segera ganti password setelah login pertama!</strong> Password default di atas bersifat sementara dan hanya untuk keperluan setup awal.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FASE 6 ═══════════════ -->
+<div class="phase">
+  <div class="phase-num">6</div>
+  <div class="phase-info">
+    <h2>Fase 6 — Verifikasi Sistem</h2>
+    <p>Test semua endpoint dan fitur setelah deployment selesai</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">18</div>
+    <h3>Test Endpoint via curl</h3>
+    <span class="badge badge-vps">🖥️ VPS</span>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cm"># Test backend langsung</span>
+<span class="cc">curl</span> http://localhost:8000
+<span class="cm"># Expected: {"status":"ok","message":"BPT Komdigi Backend API is running."}</span>
+
+<span class="cm"># Test frontend langsung</span>
+<span class="cc">curl</span> -I http://localhost:3000
+<span class="cm"># Expected: HTTP/1.1 200 OK</span>
+
+<span class="cm"># Test via domain publik (pastikan SSL aktif)</span>
+<span class="cc">curl</span> https://api.chatbot.komdigi.go.id
+<span class="cm"># Expected: {"status":"ok",...}</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">19</div>
+    <h3>Checklist Verifikasi Final</h3>
+    <span class="badge badge-vps">🖥️ VPS + Browser</span>
+  </div>
+  <div class="step-body">
+    <ul class="checklist">
+      <li>Buka <span class="inline-code">https://chatbot.komdigi.go.id</span> — halaman chatbot tampil</li>
+      <li>Klik widget chatbot — chat window terbuka</li>
+      <li>Kirim pesan — mendapat respons dari backend</li>
+      <li>Buka <span class="inline-code">https://chatbot.komdigi.go.id/admin</span> — halaman login admin tampil</li>
+      <li>Login dengan <span class="inline-code">admin / Admin@123</span> — berhasil masuk dashboard</li>
+      <li>Upload dokumen PDF di panel admin — berhasil diproses</li>
+      <li>Tanya pertanyaan tentang dokumen yang diupload — jawaban relevan</li>
+      <li>Buka <span class="inline-code">https://api.chatbot.komdigi.go.id/docs</span> — Swagger API docs terbuka</li>
+      <li>SSL aktif (ada gembok hijau di browser)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════ FASE 7 ═══════════════ -->
+<div class="phase">
+  <div class="phase-num">7</div>
+  <div class="phase-info">
+    <h2>Fase 7 — Operasional Harian</h2>
+    <p>Perintah untuk update, backup, dan monitoring</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">20</div>
+    <h3>Perintah Monitoring</h3>
+    <span class="badge badge-docker">🐳 Docker</span>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cm"># Status semua container</span>
+<span class="cc">docker compose ps</span>
+
+<span class="cm"># Log realtime (Ctrl+C untuk stop)</span>
+<span class="cc">docker compose logs</span> -f
+
+<span class="cm"># Log 50 baris terakhir service tertentu</span>
+<span class="cc">docker compose logs</span> backend --tail=50
+<span class="cc">docker compose logs</span> frontend --tail=50
+
+<span class="cm"># Monitor CPU, RAM, Network (Ctrl+C untuk stop)</span>
+<span class="cc">docker stats</span>
+
+<span class="cm"># Restart service tertentu</span>
+<span class="cc">docker compose restart</span> backend</pre>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">21</div>
+    <h3>Update Kode ke Versi Terbaru</h3>
+    <span class="badge badge-docker">🐳 Docker</span>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cc">cd</span> /home/ubuntu/bpt-chatbot
+
+<span class="cm"># Pull kode terbaru</span>
+<span class="cc">git pull</span>
+
+<span class="cm"># Rebuild dan restart container yang berubah</span>
+<span class="cc">docker compose up</span> -d --build
+
+<span class="cm"># Verifikasi semua berjalan</span>
+<span class="cc">docker compose ps</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">22</div>
+    <h3>Backup Database MongoDB</h3>
+    <span class="badge badge-docker">🐳 Docker</span>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cm"># Dump database dari container MongoDB</span>
+<span class="cc">docker exec</span> bpt_mongodb mongodump \
+  --authenticationDatabase admin \
+  -u bpt_admin \
+  -p <span class="cv">"xK9mPq2rLw8nV3z!"</span> \
+  --db bpt_db \
+  --out /tmp/backup
+
+<span class="cm"># Copy hasil dump dari container ke VPS host</span>
+<span class="cc">docker cp</span> bpt_mongodb:/tmp/backup \
+  /home/ubuntu/backups/bpt-$(date +%Y%m%d)
+
+<span class="cm"># Verifikasi backup</span>
+<span class="cc">ls</span> -la /home/ubuntu/backups/</pre>
+    </div>
+    <div class="callout callout-tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">Tambahkan perintah backup ini ke <strong>cron job</strong> agar berjalan otomatis setiap hari:<br/><span class="inline-code">crontab -e</span> → tambah: <span class="inline-code">0 2 * * * /home/ubuntu/backup.sh</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TROUBLESHOOTING ═══════════════ -->
+<div class="phase">
+  <div class="phase-num">❓</div>
+  <div class="phase-info">
+    <h2>Troubleshooting</h2>
+    <p>Solusi untuk masalah yang paling sering terjadi</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">!</div>
+    <h3>Container Backend Terus Restart / Status "unhealthy"</h3>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cc">docker compose logs</span> backend --tail=100</pre>
+    </div>
+    <p><strong>Penyebab umum:</strong></p>
+    <table>
+      <tr><th>Error di Log</th><th>Penyebab</th><th>Solusi</th></tr>
+      <tr><td>GOOGLE_CLOUD_PROJECT not set</td><td>Env var tidak terbaca</td><td>Cek .env.production backend sudah ter-upload</td></tr>
+      <tr><td>gcp-key.json not found</td><td>File GCP key tidak ada</td><td>Upload ulang credentials/gcp-key.json</td></tr>
+      <tr><td>Connection refused (mongodb)</td><td>MongoDB belum siap</td><td>Tunggu 30 detik, cek <code>docker compose ps</code></td></tr>
+      <tr><td>ModuleNotFoundError</td><td>Build Python gagal</td><td>Jalankan <code>docker compose build backend</code></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">!</div>
+    <h3>Seed Script Error: "Cannot find module"</h3>
+  </div>
+  <div class="step-body">
+    <p>Jika file <span class="inline-code">scripts/seedAdmin.mjs</span> tidak ada di dalam container:</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cm"># Copy script ke dalam container secara manual</span>
+<span class="cc">docker cp</span> \
+  /home/ubuntu/bpt-chatbot/bpt-komdigi-chatbot/scripts/seedAdmin.mjs \
+  bpt_frontend:/app/scripts/seedAdmin.mjs
+
+<span class="cm"># Jalankan ulang seed</span>
+<span class="cc">docker exec</span> -it bpt_frontend sh
+<span class="ck">MONGODB_URI</span>=<span class="cv">"mongodb://bpt_admin:PASSWORD@mongodb:27017/bpt_db?authSource=admin"</span> \
+  <span class="cc">node</span> scripts/seedAdmin.mjs
+<span class="cc">exit</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">!</div>
+    <h3>Nginx 502 Bad Gateway</h3>
+  </div>
+  <div class="step-body">
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cm"># Cek apakah container berjalan</span>
+<span class="cc">docker compose ps</span>
+
+<span class="cm"># Jika ada yang tidak running, start ulang</span>
+<span class="cc">docker compose start</span> frontend backend
+
+<span class="cm"># Cek port sudah listening</span>
+<span class="cc">ss</span> -tlnp | grep -E '3000|8000'</pre>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">!</div>
+    <h3>Login Admin Gagal / Password Salah</h3>
+  </div>
+  <div class="step-body">
+    <p>Jika lupa password atau ingin reset akun admin:</p>
+    <div class="code-block">
+      <div class="code-label"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>&nbsp;Bash (VPS)</div>
+      <pre><span class="cm"># Hapus admin lama dari MongoDB</span>
+<span class="cc">docker exec</span> -it bpt_mongodb mongosh \
+  --authenticationDatabase admin \
+  -u bpt_admin -p <span class="cv">"PASSWORD_MONGO"</span>
+
+<span class="cc">use</span> bpt_db
+db.admins.deleteOne({ username: <span class="cv">"admin"</span> })
+<span class="cc">quit()</span>
+
+<span class="cm"># Seed ulang</span>
+<span class="cc">docker exec</span> -it bpt_frontend sh
+<span class="ck">MONGODB_URI</span>=<span class="cv">"mongodb://bpt_admin:PASSWORD_MONGO@mongodb:27017/bpt_db?authSource=admin"</span> \
+  <span class="cc">node</span> scripts/seedAdmin.mjs
+<span class="cc">exit</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<div class="divider"></div>
+<div style="text-align:center;color:var(--gray-500);font-size:0.8rem;padding:20px 0 0">
+  <strong>BPT Komdigi Chatbot</strong> — Panduan Deploy v1.0 — April 2026<br/>
+  Dokumen ini bersifat internal. Jangan disebarkan ke pihak yang tidak berkepentingan.
+</div>
+
+<script>
+  // Tampilkan pesan print saat halaman dimuat
+  window.onload = () => {
+    const hint = document.createElement('div');
+    hint.innerHTML = '💾 Untuk simpan sebagai PDF: tekan Ctrl+P → pilih "Save as PDF" → klik Save';
+    Object.assign(hint.style, {
+      position:'fixed', bottom:'20px', left:'50%', transform:'translateX(-50%)',
+      background:'#1e40af', color:'white', padding:'12px 24px',
+      borderRadius:'999px', fontSize:'13px', fontFamily:'Inter,sans-serif',
+      boxShadow:'0 4px 20px rgba(0,0,0,0.2)', zIndex:'9999',
+      cursor:'pointer', whiteSpace:'nowrap'
+    });
+    hint.onclick = () => { window.print(); hint.remove(); };
+    document.body.appendChild(hint);
+    setTimeout(() => { if(hint.parentNode) hint.remove(); }, 8000);
+  };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,8 @@
+# Folder GCP credentials — JANGAN pernah commit ke git!
+credentials/
+!credentials/.gitkeep
+
+# Docker env files production
+.env
+.env.production
+.env.local

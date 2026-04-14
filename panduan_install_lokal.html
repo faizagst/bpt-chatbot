@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Panduan Testing Lokal LENTERA Chatbot (Dari Nol)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#22377A;--blue:#1E9CD7;
+  --g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;--g300:#d1d5db;
+  --g500:#6b7280;--g600:#4b5563;--g700:#374151;--g800:#1f2937;--g900:#111827;
+  --green:#15803d;--amber:#d97706;--red:#991b1b;--code:#0f172a;
+}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--g800);background:#fff;line-height:1.6;max-width:850px;margin:0 auto;padding:40px 30px;font-size:15px}
+.header{border-bottom:2px solid var(--g200);padding-bottom:20px;margin-bottom:30px}
+h1{font-weight:800;color:var(--navy);font-size:2rem;line-height:1.2;margin-bottom:8px}
+h2{font-weight:700;color:var(--navy);font-size:1.4rem;margin:40px 0 20px;display:flex;align-items:center;gap:12px;border-bottom: 1px solid var(--g200); padding-bottom: 10px;}
+h2::before{content:'';display:block;width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;counter-increment:step;content:counter(step)}
+body{counter-reset:step}
+h3{font-weight:600;color:var(--navy);font-size:1.1rem;margin:20px 0 10px;}
+p{margin-bottom:12px;color:var(--g700)}
+.call{background:#eff6ff;border-left:4px solid var(--blue);padding:14px 18px;border-radius:0 8px 8px 0;margin:15px 0;font-size:0.95rem}
+.call strong{color:var(--navy)}
+.call.warning {background:#fefce8; border-color:var(--amber);}
+.code{background:var(--code);border-radius:10px;overflow:hidden;margin:15px 0}
+.code-bar{background:rgba(255,255,255,0.05);padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:#8ba3c5;border-bottom:1px solid rgba(255,255,255,0.1)}
+pre{padding:14px;font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:#e2e8f0;overflow-x:auto}
+.ck{color:#7dd3fc}.cv{color:#86efac}.cm{color:#64748b;font-style:italic}
+.file-badge{display:inline-block;background:var(--g100);border:1px solid var(--g200);border-radius:6px;padding:3px 8px;font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:600;color:var(--g700);margin:4px 0}
+li{margin-bottom:10px;margin-left:24px}
+.highlight{background:#fef9c3;padding:2px 4px;border-radius:4px;font-weight:600;color:#92400e}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Panduan Lengkap Testing Lokal (Dari 0)</h1>
+  <p>Panduan ini dirancang khusus dari nol bagi sistem operasi Windows. Kita akan memulai dari instalasi Docker Desktop yang benar, menyiapkan environment, hingga menjalankan aplikasi LENTERA Chatbot di laptop Anda.</p>
+</div>
+
+<h2>Langkah 1: Install Docker Desktop (Dari 0)</h2>
+<p>Karena kita menggunakan arsitektur container, laptop Anda membutuhkan perantara bernama "Docker" untuk bisa menjalankan image database, API backend, dan frontend layaknya sebuah server.</p>
+
+<h3>A. Mengaktifkan WSL 2 (Windows Subsystem for Linux)</h3>
+<p>Agar Docker lebih stabil dan cepat di Windows, ia membutuhkan fitur WSL 2 diaktifkan.</p>
+<ol>
+  <li>Klik tombol Start Windows, cari <strong>PowerShell</strong>.</li>
+  <li>Penting: <strong>Klik Kanan PowerShell &rarr; Run as Administrator</strong>.</li>
+  <li>Ketik perintah ini di PowerShell lalu tekan Enter:</li>
+</ol>
+<div class="code"><div class="code-bar">PowerShell (Admin)</div><pre>wsl --install</pre></div>
+<p><em>Jika Anda disuruh me-restart komputer/laptop setelah proses selesai, silakan Restart terlebih dahulu sebelum lanjut.</em></p>
+
+<h3>B. Download dan Install Docker Desktop</h3>
+<ol>
+  <li>Buka browser, kunjungi: <strong><a href="https://www.docker.com/products/docker-desktop/" target="_blank">Download Docker Desktop</a></strong></li>
+  <li>Klik tombol biru <strong>Download for Windows</strong>.</li>
+  <li>Setelah selesai didownload, buka file installernya (<code>Docker Desktop Installer.exe</code>).</li>
+  <li>Saat mode instalasi, pastikan opsi <strong>"Use WSL 2 instead of Hyper-V"</strong> sudah tercentang, lalu tekan OK dan ikuti sampai selesai (mungkin akan meminta Restart komputer lagi).</li>
+</ol>
+
+<h3>C. Jalankan Docker Pertama Kali</h3>
+<ol>
+  <li>Cari <strong>Docker Desktop</strong> di menu Start Windows lalu buka.</li>
+  <li>Saat pertama dibuka, jika muncul pop-up Terms & Conditions, klik <strong>Accept</strong>.</li>
+  <li>Klik tombol <strong>Continue without signing in</strong> (Anda tidak wajib membuat akun).</li>
+  <li>Tunggu beberapa saat sampai indikator di pojok kiri bawah aplikasinya berwarna Hijau (bertuliskan <strong>Engine running</strong>). Jangan di-close, cukup Minimize (simpan) aplikasinya.</li>
+</ol>
+
+<div class="call warning">
+  <strong>🔥 Validasi Sukses:</strong> Buka "Command Prompt", lalu ketik <code>docker --version</code> dan enter. Jika muncul tulisan seperti <i>Docker version 24.x.x</i> maka Docker berhasil diinstall.
+</div>
+
+
+<h2>Langkah 2: Siapkan Kredensial AI (GCP)</h2>
+<p>Agar backend bisa "berpikir" tanpa error, Anda wajib memasukkan kunci rahasia milik Google Cloud.</p>
+<ol>
+  <li>Pastikan file Master Anda yang bernama <strong>gcp-key.json</strong> sudah diletakkan ke dalam folder:</li>
+</ol>
+<p><span class="file-badge">d:\KADA\bpt-chatbot\credentials\gcp-key.json</span></p>
+
+<h2>Langkah 3: Konfigurasi File Environment Lokal (.env)</h2>
+<p>Di VPS kita memakai NGINX dan HTTPS. Di laptop, kita tidak punya itu. Maka kita harus "memutar" jalurnya sedekat mungkin ke koneksi lokal (localhost).</p>
+
+<h3>A. Password Utama (Root Env)</h3>
+<p>Buka folder <code>d:\KADA\bpt-chatbot\</code>. Cari file bernama <code>.env</code>. Pastikan isinya ada password:</p>
+<div class="code"><div class="code-bar">d:\KADA\bpt-chatbot\.env</div><pre>
+<span class="ck">MONGO_ROOT_PASSWORD</span>=<span class="cv">PasswordKuat123</span>
+<span class="ck">REDIS_PASSWORD</span>=<span class="cv">RahasiaRedis456</span></pre></div>
+
+<h3>B. Setting Backend</h4>
+<p>Buka file <code>bpt-komdigi-chatbot-BE/.env.production</code> dan rubah menjadi seperti ini:</p>
+<div class="code"><div class="code-bar">d:\KADA\bpt-chatbot\bpt-komdigi-chatbot-BE\.env.production</div><pre>
+<span class="cm"># Pastikan menggunakan password yang sama persis seperti poin A di atas</span>
+<span class="ck">MONGODB_URI</span>=<span class="cv">mongodb://bpt_admin:PasswordKuat123@mongodb:27017/bpt_db?authSource=admin</span>
+<span class="ck">REDIS_URL</span>=<span class="cv">redis://:RahasiaRedis456@redis:6379/0</span>
+
+<span class="cm"># ⭐ PENTING: Karena ini pakai laptop lokal, kita ubah Domain CORS-nya ke Localhost:3000</span>
+<span class="ck">ALLOWED_ORIGINS</span>=<span class="cv">http://localhost:3000</span></pre></div>
+
+<h3>C. Setting Frontend</h4>
+<p>Buka file <code>bpt-komdigi-chatbot/.env.production</code>. Ganti bagian ini:</p>
+<div class="code"><div class="code-bar">d:\KADA\bpt-chatbot\bpt-komdigi-chatbot\.env.production</div><pre>
+<span class="cm"># Internal (jangan dirubah) - Next.js cari backend pake nama docker "backend"</span>
+<span class="ck">BACKEND_API_URL</span>=<span class="cv">http://backend:8000</span>
+
+<span class="cm"># ⭐ PENTING: Untuk testing di browser laptop lokal (Client-Side), paksa panggil API melalui localhost 8000</span>
+<span class="ck">NEXT_PUBLIC_BACKEND_API_URL</span>=<span class="cv">http://localhost:8000</span>
+
+<span class="cm"># Pastikan sama isinya seperti Backend bagian B tadi!</span>
+<span class="ck">MONGODB_URI</span>=<span class="cv">mongodb://bpt_admin:PasswordKuat123@mongodb:27017/bpt_db?authSource=admin</span>
+<span class="ck">JWT_SECRET</span>=<span class="cv">sembarang_teks_bebas</span></pre></div>
+
+
+<h2>Langkah 4: Jalankan Komplet via Terminal</h2>
+<p>Sekarang tahap yang sesungguhnya.</p>
+<ol>
+  <li>Buka <strong>Command Prompt (cmd)</strong> biasa.</li>
+  <li>Pindah ke folder project chatbot dengan mengetik:</li>
+</ol>
+<div class="code"><div class="code-bar">CMD</div><pre>cd d:\KADA\bpt-chatbot
+d:</pre></div>
+<ol start="3">
+  <li>Jalankan kode rahasianya untuk membangun keseluruhannya sekaligus (harap sabar menunggunya):</li>
+</ol>
+<div class="code"><div class="code-bar">CMD / PowerShell</div><pre>docker compose up -d --build</pre></div>
+<div class="call">
+  Sistem akan men-download database (Mongo, Redis), meng-install library Python, mendownload Model AI Embeddings (~1.5GB) dan menyusun ulang Javascript. Proses ini bisa membutuhkan <strong>5 hingga 15 menit</strong>. Cukup lihat hingga semua proses selesai bertuliskan <i>Started</i> / <i>Done</i> tanpa error.
+</div>
+
+<h2>Langkah 5: Membuat Akses Admin Pertama</h2>
+<p>Setelah semuanya nyala dengan sukses. Anda harus menyuruh Frontend (yang sedang jalan di Docker) membuat akun admin pertama kalinya agar Anda bisa login di browser.</p>
+<ol>
+  <li>Buka <strong>Command Prompt</strong> yang sama. Pastikan sedang berada di direktori project lalu copy paste ini lalu tekan Enter:</li>
+</ol>
+<div class="code"><div class="code-bar">CMD / PowerShell</div><pre>docker exec -it bpt_frontend sh -c "node scripts/seedAdmin.mjs"</pre></div>
+<p>Sebuah tulisan <span class="highlight">Admin 'admin' berhasil ditambahkan!</span> akan tampil jika sukses.</p>
+
+<h2>Langkah 6: Buka Aplikasi & Lakukan Pengecekan</h2>
+<p>Sekarang sistemnya sudah berdiri utuh. Coba buka Browser Google Chrome / Edge untuk testing:</p>
+<ul>
+  <li>🗣️ <strong>UI Chatbot untuk Publik:</strong> Buka situs <code>http://localhost:3000</code> dan cobalah mengirim pesan bot.</li>
+  <li>🔐 <strong>Buka Panel Admin CMS:</strong> Buka situs <code>http://localhost:3000/admin</code>. (Gunakan Username <strong>admin</strong> dan password: <strong>Admin@123</strong>).</li>
+  <li>📄 <strong>Cobalah Mengelola Info:</strong> Coba fitur Upload file PDF/Docx, lalu cek di tabel manage file. Setelah berhasil terupload, cobalah tanyakan kembali informasinya langsung ke chatbot.</li>
+</ul>
+
+<div class="call warning">
+  <strong>🔥 PENTING SAAT AKAN DEPLOY ASLI DI VPS :</strong><br/>
+  Setelah puas testing dan semuanya terbukti lancar di "localhost", ingat untuk melakukan kebalikan Step 3: mengubah kembali .env.production ke domain milik komdigi (misal `https://api.chatbot.domain.go.id`) <strong>sebelum</strong> file ini di-copy ke server VPS asli Anda!
+</div>
+
+</body>
+</html>
