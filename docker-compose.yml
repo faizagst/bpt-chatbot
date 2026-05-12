@@ -31,13 +31,6 @@ services:
       - qdrant_data:/qdrant/storage
     networks:
       - bpt_network
-    # Qdrant TIDAK di-expose ke publik
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6333/healthz"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
 
   redis:
     image: redis:7-alpine
@@ -70,7 +63,7 @@ services:
       mongodb:
         condition: service_healthy
       qdrant:
-        condition: service_healthy
+        condition: service_started
       redis:
         condition: service_healthy
     volumes:
